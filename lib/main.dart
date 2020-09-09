@@ -1,7 +1,5 @@
 import 'package:Aol_docProvider/Services/authenticationService.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
-import 'package:Aol_docProvider/models/usermodel.dart';
-import 'package:Aol_docProvider/ui/widgets/screens/wrapper.dart';
 import 'package:Aol_docProvider/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

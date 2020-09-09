@@ -1,25 +1,23 @@
-import 'package:Aol_docProvider/Services/authenticationService.dart';
-import 'package:Aol_docProvider/Services/constants.dart';
-import 'package:Aol_docProvider/Services/validators.dart';
-import 'package:Aol_docProvider/Widgets/buttons.dart';
-import 'package:Aol_docProvider/Widgets/loading.dart';
-import 'package:Aol_docProvider/Widgets/textFields.dart';
+import 'package:Aol_docProvider/core/services/authenticationService.dart';
+import 'package:Aol_docProvider/core/services/constants.dart';
+import 'package:Aol_docProvider/core/services/validators.dart';
+import 'package:Aol_docProvider/ui/widgets/buttons.dart';
+import 'package:Aol_docProvider/ui/widgets/loading.dart';
+import 'package:Aol_docProvider/ui/widgets/textFields.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class SignUp extends StatefulWidget {
+class SignIn extends StatefulWidget {
   final Function toggleView;
-  SignUp({this.toggleView});
+  SignIn({this.toggleView});
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignInState createState() => _SignInState();
 }
 
-class _SignUpState extends State<SignUp> {
-  final _signUpKey = GlobalKey<FormState>();
+class _SignInState extends State<SignIn> {
+  final _signInKey = GlobalKey<FormState>();
   TextEditingController _emailHomePageController = new TextEditingController();
-  TextEditingController _passwordHomePageConroller1 =
-      new TextEditingController();
-  TextEditingController _passwordHomePageConroller2 =
+  TextEditingController _passwordHomePageConroller =
       new TextEditingController();
   String error = '';
 
@@ -29,7 +27,7 @@ class _SignUpState extends State<SignUp> {
         ? Loading()
         : Scaffold(
             appBar: AppBar(
-              title: Text("Sign Up Page"),
+              title: Text("Sign In Page"),
               centerTitle: true,
               flexibleSpace: Container(
                 decoration: colorBox,
@@ -38,7 +36,7 @@ class _SignUpState extends State<SignUp> {
             body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Form(
-                  key: _signUpKey,
+                  key: _signInKey,
                   child: ListView(
                     children: [
                       Center(
@@ -61,16 +59,7 @@ class _SignUpState extends State<SignUp> {
                         height: 16,
                       ),
                       textFieldWidget(
-                          controller: _passwordHomePageConroller1,
-                          hintText: "Enter your password",
-                          validateFunction: passwordValidator,
-                          labelText: "Password",
-                          obscure: true),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      textFieldWidget(
-                          controller: _passwordHomePageConroller2,
+                          controller: _passwordHomePageConroller,
                           hintText: "Enter your password",
                           validateFunction: passwordValidator,
                           labelText: "Password",
@@ -81,37 +70,30 @@ class _SignUpState extends State<SignUp> {
                       Builder(builder: (BuildContext context) {
                         return formButton(context,
                             iconData: Icons.lock_open,
-                            textData: "Sign Up", onPressed: () async {
-                          if (_signUpKey.currentState.validate()) {
-                            if (_passwordHomePageConroller1.text ==
-                                _passwordHomePageConroller2.text) {
-                              setState(() {
-                                isLoading = true;
+                            textData: "Sign In", onPressed: () async {
+                          if (_signInKey.currentState.validate()) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            try {
+                              AuthenticationService()
+                                  .signinEmailId(_emailHomePageController.text,
+                                      _passwordHomePageConroller.text)
+                                  .then((value) {
+                                if (value == null) {
+                                  setState(() {
+                                    isLoading = false;
+                                    error =
+                                        'please use valid email or password';
+                                  });
+                                  // Scaffold.of(context).showSnackBar(SnackBar(
+                                  //     content: Text("invalid email or password")));
+                                } else {
+                                  debugPrint(value.uid);
+                                }
                               });
-                              try {
-                                AuthenticationService()
-                                    .signupEmailId(
-                                        _emailHomePageController.text,
-                                        _passwordHomePageConroller1.text)
-                                    .then((value) {
-                                  if (value == null) {
-                                    setState(() {
-                                      isLoading = false;
-                                      error = 'something went wrong';
-                                    });
-                                    // Scaffold.of(context).showSnackBar(SnackBar(
-                                    //     content: Text("invalid email or password")));
-                                  } else {
-                                    debugPrint(value.uid);
-                                  }
-                                });
-                              } catch (error) {
-                                debugPrint(error.toString());
-                              }
-                            } else {
-                              setState(() {
-                                error = 'passwords didn' '/t match';
-                              });
+                            } catch (error) {
+                              debugPrint(error.toString());
                             }
                           }
                         });
@@ -124,12 +106,12 @@ class _SignUpState extends State<SignUp> {
                           child: Center(
                             child: RichText(
                               text: TextSpan(
-                                  text: 'Already have an account?',
+                                  text: 'Don\'t have an account?',
                                   style: TextStyle(
                                       color: Colors.amber[800], fontSize: 18),
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: ' Sign In',
+                                        text: ' Sign Up',
                                         style: TextStyle(
                                             color: Colors.blueAccent,
                                             fontSize: 18),

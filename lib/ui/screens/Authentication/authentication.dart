@@ -1,5 +1,5 @@
-import 'package:Aol_docProvider/screens/Authentication/sign_in..dart';
-import 'package:Aol_docProvider/screens/Authentication/sign_up.dart';
+import 'package:Aol_docProvider/ui/screens/Authentication/sign_in..dart';
+import 'package:Aol_docProvider/ui/screens/Authentication/sign_up.dart';
 import 'package:flutter/material.dart';
 
 class Authenticate extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:Aol_docProvider/Services/constants.dart';
 import 'package:Aol_docProvider/Services/database.dart';
-import 'package:Aol_docProvider/Widgets/drawer.dart';
-import 'package:Aol_docProvider/Widgets/file.dart';
-import 'package:Aol_docProvider/Widgets/folders.dart';
-import 'package:Aol_docProvider/models/filemodel.dart';
-import 'package:Aol_docProvider/models/foldermodel.dart';
+import 'package:Aol_docProvider/core/models/filemodel.dart';
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/ui/widgets/drawer.dart';
+import 'package:Aol_docProvider/ui/widgets/file.dart';
+import 'package:Aol_docProvider/ui/widgets/folders.dart';
 
 import 'package:flutter/material.dart';
 

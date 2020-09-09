@@ -5,9 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class AuthenticationService {
+  // final firebaseAuth variable
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create User object
+
   UserModel _userfromAuthentication(User user) {
     return user != null ? UserModel(uid: user.uid) : null;
   }
@@ -50,7 +53,7 @@ class AuthenticationService {
     }
   }
 
-  // User Signs ut
+  // User Signs out
 
   Future signoutEmailId() async {
     try {

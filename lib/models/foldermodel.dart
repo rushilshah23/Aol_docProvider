@@ -3,7 +3,6 @@ class FolderModel {
   final dynamic pid;
   final dynamic folderId;
   final dynamic folderName;
-
   final dynamic createdAt;
 
   FolderModel(

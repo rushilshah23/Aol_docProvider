@@ -5,9 +5,8 @@ import 'package:Aol_docProvider/Widgets/file.dart';
 import 'package:Aol_docProvider/Widgets/folders.dart';
 import 'package:Aol_docProvider/models/filemodel.dart';
 import 'package:Aol_docProvider/models/foldermodel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class DrivePage extends StatefulWidget {
   final String uid;
@@ -102,7 +101,9 @@ class _DrivePageState extends State<DrivePage> {
                   ListTile(
                     leading: Icon(Icons.cloud_upload),
                     title: Text("Upload File"),
-                    onTap: () {},
+                    onTap: () {
+                      // TODO upload file
+                    },
                   )
                 ],
               ),
@@ -113,30 +114,36 @@ class _DrivePageState extends State<DrivePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<QuerySnapshot>.value(
-      value: DatabaseService().details,
-      child: Scaffold(
-        appBar: AppBar(
-            title: Text("DrivePage"),
-            centerTitle: true,
-            flexibleSpace: Container(
-              decoration: colorBox,
-            )),
-        drawer: homeDrawer(context),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            return driveOptions(context);
-          },
-          backgroundColor: appColor,
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: ListView(
-          children: [
-            FolderCard(),
-            FileCard(),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+          title: Text("DrivePage"),
+          centerTitle: true,
+          flexibleSpace: Container(
+            decoration: colorBox,
+          )),
+      drawer: homeDrawer(context),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          return driveOptions(context);
+        },
+        backgroundColor: appColor,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: GridView(
+        shrinkWrap: true,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        children: [
+          FolderCard(),
+          FileCard(),
+          FolderCard(),
+          FileCard(),
+          FolderCard(),
+          FileCard(),
+          FolderCard(),
+          FileCard(),
+        ],
       ),
     );
   }

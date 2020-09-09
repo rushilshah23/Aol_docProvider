@@ -8,11 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class FolderCard extends StatefulWidget {
   final dynamic userId;
   final dynamic pid;
+  final dynamic folderId;
   final dynamic folderName;
 
   final dynamic createdAt;
 
-  FolderCard({this.userId, this.pid, this.folderName, this.createdAt});
+  FolderCard(
+      {this.userId, this.pid, this.folderId, this.folderName, this.createdAt});
   @override
   _FolderCardState createState() => _FolderCardState();
 }

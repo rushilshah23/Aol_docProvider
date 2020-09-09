@@ -2,6 +2,7 @@ import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class AuthenticationService {
   // final firebaseAuth variable

@@ -1,6 +1,7 @@
-import 'package:Aol_docProvider/Services/authenticationService.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/authenticationService.dart';
 import 'package:Aol_docProvider/wrapper.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';

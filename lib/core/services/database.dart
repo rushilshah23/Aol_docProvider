@@ -1,64 +1,45 @@
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:firebase_database/firebase_database.dart";
+import 'package:flutter/foundation.dart';
 
 class DatabaseService {
   final String userID;
 
   DatabaseService({this.userID});
 
-  FirebaseFirestore _db = FirebaseFirestore.instance;
-  // final CollectionReference _users =
-  //     FirebaseFirestore.instance.collection('users');
-  // final CollectionReference _files =
-  //     FirebaseFirestore.instance.collection('files');
-  // final CollectionReference _folders =
-  //     FirebaseFirestore.instance.collection('folders');
+  FirebaseDatabase _db = FirebaseDatabase.instance;
 
   Future updateUserData({String folderName}) async {
-    return await _db.collection('users').doc(userID).set({
+    DatabaseReference _createUserDrive = _db.reference();
+    await _createUserDrive.reference().child('users').child(userID).set({
       'folderName': folderName,
       'userId': userID,
     });
   }
 
-  Stream<List<FolderModel>> getDirectoryFolders({String folderId}) {
-    return _db
-        .collection('folders')
-        .where('userId', isEqualTo: userID)
-        .where('parentId', isEqualTo: folderId)
-        .orderBy('created at', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => FolderModel.fromJson(doc.data()))
-            .toList());
-    // .snapshots().map((snapshot) => snapshot.docs.asMap().)
-  }
+  // Stream<List<FolderModel>> getDirectoryFolders({String folderId}) {}
 
-  Stream<List<FileModel>> getDirectoryFiles({String folderId}) {
-    return _db
-        .collection('ffiles')
-        .where('userId', isEqualTo: userID)
-        .where('parentId', isEqualTo: folderId)
-        .orderBy('created at', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => FileModel.fromJson(doc.data()))
-            .toList());
-  }
+  // Stream<List<FileModel>> getDirectoryFiles({String folderId}) {}
 
-  createFolder({String parentID, String folderName, String type}) async {
+  Future createFolder(
+      {String parentId, String folderName, documentType type}) async {
     // var newKey = _users.doc(userID).collection('documentManager').doc();
-    var newKey = _db.collection('folders').doc();
-    _db.collection('folders').doc(newKey.id).set({
+    var newKey = _db.reference().child('folders').push().key;
+    await _db.reference().child('folders').child(newKey).set({
       'userId': userID,
-      'parentId': parentID,
-      'folderId': newKey.id,
-      'type': type,
+      'parentId': parentId,
+      'folderId': newKey,
+      'type': type.toString(),
       'folderName': folderName,
       'created at': Timestamp.now().toDate().toIso8601String(),
     });
   }
+
+  // Future deleteFolder({String folderId}) {}
+
   // TODO
   // Stream<QuerySnapshot> get files {
   //   return _db.collection('collectionPath').snapshots();

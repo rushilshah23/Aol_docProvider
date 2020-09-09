@@ -1,5 +1,4 @@
-import 'package:Aol_docProvider/Services/database.dart';
-
+import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:flutter/material.dart';
@@ -57,8 +56,8 @@ class _FolderCardState extends State<FolderCard> {
             FlatButton(
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
-                    DatabaseService(userID: widget.userId).renameFolder();
-                    Navigator.pop(context);
+                    // DatabaseService(userID: widget.userId).renameFolder();
+                    // Navigator.pop(context);
                   }
                 },
                 child: Text("Ok")),

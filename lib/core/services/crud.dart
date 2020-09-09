@@ -29,8 +29,8 @@ class Crud extends ChangeNotifier {
     // uploadFile(userId: userID,file: file,fileName: fileName,folderId: )
   }
 
-  Future<void> uploadFile(
-      {String userId, String folderId, String fileName, File file}) {}
+  // Future<void> uploadFile(
+  //     {String userId, String folderId, String fileName, File file}) {}
 
   deleteFile() {
     // TODO DELETE FILE

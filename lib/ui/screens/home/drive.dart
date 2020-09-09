@@ -1,17 +1,21 @@
-import 'package:Aol_docProvider/Services/constants.dart';
-import 'package:Aol_docProvider/Services/database.dart';
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
 import 'package:Aol_docProvider/ui/widgets/file.dart';
 import 'package:Aol_docProvider/ui/widgets/folders.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DrivePage extends StatefulWidget {
   final String uid;
   final String pid;
   DrivePage({this.uid, this.pid});
+
   @override
   _DrivePageState createState() => _DrivePageState();
 }
@@ -22,6 +26,10 @@ class _DrivePageState extends State<DrivePage> {
 
   List<FileModel> fileCards = [];
   List<FolderModel> folderCards = [];
+
+  void initState() {
+    super.initState();
+  }
 
   createFolderPopUp(BuildContext context) {
     return showDialog(
@@ -54,10 +62,12 @@ class _DrivePageState extends State<DrivePage> {
                 onPressed: () async {
                   if (_folderNameKey.currentState.validate()) {
                     await DatabaseService(userID: widget.uid).createFolder(
-                        // userId: widget.uid,
-                        folderName: _folderNameController.text,
-                        parentID: widget.pid,
-                        type: 'folder');
+                      folderName: _folderNameController.text,
+                      parentId: widget.pid,
+                      type: documentType.folder,
+
+                      // TODO CALL CREATE FOLDER
+                    );
                     _folderNameController.clear();
                     Navigator.pop(context);
                   }
@@ -114,6 +124,7 @@ class _DrivePageState extends State<DrivePage> {
 
   @override
   Widget build(BuildContext context) {
+    // var user = Provider.of<UserModel>(context);
     return Scaffold(
       appBar: AppBar(
           title: Text("DrivePage"),
@@ -134,16 +145,7 @@ class _DrivePageState extends State<DrivePage> {
         shrinkWrap: true,
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        children: [
-          FolderCard(),
-          FileCard(),
-          FolderCard(),
-          FileCard(),
-          FolderCard(),
-          FileCard(),
-          FolderCard(),
-          FileCard(),
-        ],
+        children: [],
       ),
     );
   }

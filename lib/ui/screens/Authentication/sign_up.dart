@@ -1,6 +1,6 @@
-import 'package:Aol_docProvider/Services/authenticationService.dart';
-import 'package:Aol_docProvider/Services/constants.dart';
-import 'package:Aol_docProvider/Services/validators.dart';
+import 'package:Aol_docProvider/core/services/authenticationService.dart';
+import 'package:Aol_docProvider/core/services/validators.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/buttons.dart';
 import 'package:Aol_docProvider/ui/widgets/loading.dart';
 import 'package:Aol_docProvider/ui/widgets/textFields.dart';

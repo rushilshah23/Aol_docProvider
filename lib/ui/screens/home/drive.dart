@@ -122,14 +122,7 @@ class _DrivePageState extends State<DrivePage> {
   @override
   Widget build(BuildContext context) {
     // var user = Provider.of<UserModel>(context);
-    return MultiProvider(
-      providers: [
-        // StreamProvider<Stream<List<FolderModel>>>.value(
-        //     value: DatabaseService(userID: widget.uid).folders),
-        // StreamProvider<Stream<List<FileModel>>>.value(
-        //     value: DatabaseService().files),
-      ],
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
             title: Text("DrivePage"),
             centerTitle: true,
@@ -145,13 +138,11 @@ class _DrivePageState extends State<DrivePage> {
           backgroundColor: appColor,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: GridView(
-          shrinkWrap: true,
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          children: [],
-        ),
-      ),
-    );
+        body: ListView(
+          children: [
+            Text('demo'),
+            // FolderGrid(),
+          ],
+        ));
   }
 }

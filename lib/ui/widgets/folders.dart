@@ -7,15 +7,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class FolderCard extends StatefulWidget {
-  final dynamic userId;
-  final dynamic pid;
-  final dynamic folderId;
-  final dynamic folderName;
+  final FolderModel folderModel;
 
-  final dynamic createdAt;
+  FolderCard({this.folderModel});
+  // final dynamic userId;
+  // final dynamic parentiId;
+  // final dynamic folderId;
+  // final dynamic folderName;
+  // final dynamic type;
 
-  FolderCard(
-      {this.userId, this.pid, this.folderId, this.folderName, this.createdAt});
+  // final dynamic createdAt;
+
+  // FolderCard(
+  //     {this.userId,
+  //     this.parentiId,
+  //     this.folderId,
+  //     this.folderName,
+  //     this.type,
+  //     this.createdAt});
   @override
   _FolderCardState createState() => _FolderCardState();
 }
@@ -114,7 +123,6 @@ class _FolderCardState extends State<FolderCard> {
 
   @override
   Widget build(BuildContext context) {
-    final folders = Provider.of<List<FolderModel>>(context);
     return Container(
         height: 120,
         width: 120,
@@ -147,7 +155,7 @@ class _FolderCardState extends State<FolderCard> {
                         Container(
                           width: 120,
                           child: AutoSizeText(
-                            "${widget.folderName}",
+                            "${widget.folderModel.folderName}",
                             maxLines: 2,
                             minFontSize: 28,
                             maxFontSize: 28,

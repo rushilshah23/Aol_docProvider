@@ -1,6 +1,6 @@
 class FileModel {
   final dynamic userId;
-  final dynamic pid;
+  final dynamic parentId;
   final dynamic fileId;
   final dynamic fileName;
   final dynamic type;
@@ -9,21 +9,21 @@ class FileModel {
 
   FileModel(
       {this.userId,
-      this.pid,
+      this.parentId,
       this.fileId,
       this.fileName,
       this.type,
       this.fileDownloadLink,
       this.createdAt});
 
-  FileModel.fromJson(Map<String, dynamic> parsedJson)
-      : userId = parsedJson['userId'] ?? '',
-        pid = parsedJson['pid'] ?? '',
-        fileId = parsedJson['fileId'] ?? '',
-        type = parsedJson['type'] ?? '',
-        fileDownloadLink = parsedJson['fileDownloadLink'] ?? '',
-        fileName = parsedJson['fileName'] ?? '',
-        createdAt = parsedJson['created at'] ?? '';
+  // FileModel.fromJson(Map<String, dynamic> parsedJson)
+  //     : userId = parsedJson['userId'] ?? '',
+  //       pid = parsedJson['pid'] ?? '',
+  //       fileId = parsedJson['fileId'] ?? '',
+  //       type = parsedJson['type'] ?? '',
+  //       fileDownloadLink = parsedJson['fileDownloadLink'] ?? '',
+  //       fileName = parsedJson['fileName'] ?? '',
+  //       createdAt = parsedJson['created at'] ?? '';
 }
 
 // FileModel.fromMap(Map snapshot, String fileId)

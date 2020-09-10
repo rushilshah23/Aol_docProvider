@@ -1,6 +1,6 @@
 class FolderModel {
   final dynamic userId;
-  final dynamic pid;
+  final dynamic parentId;
   final dynamic folderId;
   final dynamic type;
   final dynamic folderName;
@@ -8,7 +8,7 @@ class FolderModel {
 
   FolderModel(
       {this.userId,
-      this.pid,
+      this.parentId,
       this.folderId,
       this.type,
       this.folderName,
@@ -22,11 +22,11 @@ class FolderModel {
   //       folderName = snapshot['folderName'] ?? '',
   //       createdAt = snapshot['created at'] ?? '';
 
-  FolderModel.fromJson(Map<String, dynamic> parsedJson)
-      : userId = parsedJson['userId'] ?? '',
-        pid = parsedJson['pid'] ?? '',
-        folderId = parsedJson['folderId'] ?? '',
-        type = parsedJson['type'] ?? '',
-        folderName = parsedJson['folderName'] ?? '',
-        createdAt = parsedJson['created at'] ?? '';
+  // FolderModel.fromJson(Map<String, dynamic> parsedJson)
+  //     : userId = parsedJson['userId'] ?? '',
+  //       pid = parsedJson['pid'] ?? '',
+  //       folderId = parsedJson['folderId'] ?? '',
+  //       type = parsedJson['type'] ?? '',
+  //       folderName = parsedJson['folderName'] ?? '',
+  //       createdAt = parsedJson['created at'] ?? '';
 }

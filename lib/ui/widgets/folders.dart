@@ -1,8 +1,10 @@
-import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
+
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class FolderCard extends StatefulWidget {
   final dynamic userId;
@@ -112,6 +114,7 @@ class _FolderCardState extends State<FolderCard> {
 
   @override
   Widget build(BuildContext context) {
+    final folders = Provider.of<List<FolderModel>>(context);
     return Container(
         height: 120,
         width: 120,

@@ -3,7 +3,6 @@ import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:firebase_database/firebase_database.dart";
-import 'package:flutter/foundation.dart';
 
 class DatabaseService {
   final String userID;
@@ -18,6 +17,63 @@ class DatabaseService {
       'folderName': folderName,
       'userId': userID,
     });
+  }
+
+  List<FolderModel> _getFoldersList(DataSnapshot snapshot) {
+    List<FolderModel> foldersList;
+    var data = snapshot.value;
+    var keys = snapshot.value.keys;
+
+    for (var key in keys) {
+      FolderModel folderCard = new FolderModel(
+        userId: data[key]['userId'] ?? '',
+        parentId: data[key]['parentId'] ?? '',
+        folderId: data[key]['folderId'] ?? '',
+        folderName: data[key]['folderName'] ?? '',
+        createdAt: data[key]['created at'] ?? '',
+        type: data[key]['type'] ?? '',
+      );
+      foldersList.add(folderCard);
+    }
+    return foldersList;
+  }
+
+  Stream<List<FolderModel>> get folders {
+    return _db
+        .reference()
+        .child('folders')
+        .once()
+        .then((snapshot) => _getFoldersList(snapshot))
+        .asStream();
+  }
+
+  List<FileModel> _getFilesList(DataSnapshot snapshot) {
+    List<FileModel> filesList;
+    var data = snapshot.value;
+    var keys = snapshot.value.keys;
+
+    for (var key in keys) {
+      FileModel fileCard = new FileModel(
+        userId: data[key]['userId'] ?? '',
+        parentId: data[key]['parentId'] ?? '',
+        fileId: data[key]['fileId'] ?? '',
+        fileName: data[key]['fileName'] ?? '',
+        createdAt: data[key]['created at'] ?? '',
+        type: data[key]['type'] ?? '',
+        fileDownloadLink: data[key]['fileDownloadLink'] ?? '',
+      );
+      filesList.add(fileCard);
+    }
+    return filesList;
+  }
+
+  Stream<List<FileModel>> get files {
+    return _db
+        .reference()
+        .child('folders')
+        .once()
+        .then((snapshot) => _getFilesList(snapshot))
+        .asStream();
   }
 
   // Stream<List<FolderModel>> getDirectoryFolders({String folderId}) {}

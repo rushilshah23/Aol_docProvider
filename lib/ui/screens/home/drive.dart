@@ -1,12 +1,9 @@
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
-import 'package:Aol_docProvider/core/models/usermodel.dart';
+
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
-import 'package:Aol_docProvider/ui/widgets/file.dart';
-import 'package:Aol_docProvider/ui/widgets/folders.dart';
-import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -125,27 +122,35 @@ class _DrivePageState extends State<DrivePage> {
   @override
   Widget build(BuildContext context) {
     // var user = Provider.of<UserModel>(context);
-    return Scaffold(
-      appBar: AppBar(
-          title: Text("DrivePage"),
-          centerTitle: true,
-          flexibleSpace: Container(
-            decoration: colorBox,
-          )),
-      drawer: homeDrawer(context),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          return driveOptions(context);
-        },
-        backgroundColor: appColor,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: GridView(
-        shrinkWrap: true,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        children: [],
+    return MultiProvider(
+      providers: [
+        // StreamProvider<Stream<List<FolderModel>>>.value(
+        //     value: DatabaseService(userID: widget.uid).folders),
+        // StreamProvider<Stream<List<FileModel>>>.value(
+        //     value: DatabaseService().files),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+            title: Text("DrivePage"),
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: colorBox,
+            )),
+        drawer: homeDrawer(context),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            return driveOptions(context);
+          },
+          backgroundColor: appColor,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        body: GridView(
+          shrinkWrap: true,
+          gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          children: [],
+        ),
       ),
     );
   }

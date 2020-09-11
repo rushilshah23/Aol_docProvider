@@ -72,6 +72,7 @@ class _FolderCardState extends State<FolderCard> {
                         folderName: widget.folderName,
                         newFolderName: _renameFolderController.text,
                         parentPath: widget.folderPath);
+                    _renameFolderController.clear();
                     Navigator.pop(context);
                     // DatabaseService(userID: widget.userId).renameFolder();
                     // Navigator.pop(context);

@@ -171,7 +171,7 @@ class _FileCardState extends State<FileCard> {
               IconButton(
                 iconSize: 60,
                 icon: FaIcon(
-                  FontAwesomeIcons.fileAlt,
+                  FontAwesomeIcons.solidFileAlt,
                   size: 60,
                 ),
                 onPressed: () async {

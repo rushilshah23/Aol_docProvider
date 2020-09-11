@@ -38,11 +38,12 @@ class _DrivePageState extends State<DrivePage> {
   TextEditingController _folderNameController = new TextEditingController();
   List<FolderCard> foldersCard = [];
   List<FileCard> filesCard = [];
-  String appPath;
+  String appPath, folderappBar;
 
   void initState() {
     setState(() {
-      PathNavigator().readblePath.add("${widget.folderName}/");
+      folderappBar = "${widget.folderName}/";
+      PathNavigator().readblePath.add(folderappBar);
       appPath = PathNavigator().readblePath.join(",").toString();
     });
 
@@ -251,8 +252,9 @@ class _DrivePageState extends State<DrivePage> {
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(
+                      // title: Text(widget.folderPath),
                       title: AutoSizeText(
-                        appPath,
+                        widget.folderPath,
                         overflow: TextOverflow.visible,
                       ),
                       centerTitle: true,

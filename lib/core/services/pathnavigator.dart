@@ -1,4 +1,4 @@
 class PathNavigator {
-  var databasePath = [];
-  var readblePath = [];
+  List<String> databasePath = [];
+  List<String> readblePath = [];
 }

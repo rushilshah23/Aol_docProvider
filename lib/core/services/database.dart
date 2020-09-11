@@ -7,6 +7,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:firebase_database/firebase_database.dart";
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DatabaseService {
   final String userID;
@@ -283,8 +287,62 @@ class DatabaseService {
     // }
   }
 
-  Future deleteFolder() async {}
+  Future deleteFolder(
+      {String folderId, String folderPath, String folderName}) async {
+    await _db
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .child(folderId)
+        .remove();
 
+    StorageReference storageReference =
+        FirebaseStorage.instance.ref().child(folderPath);
+    var deleteTask = storageReference.child(folderName).delete();
+  }
+
+  Future renameFile(
+      {String newFileName, String fileId, String filePath}) async {
+    await _db
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .child(fileId)
+        .update({
+      'fileName': newFileName,
+    });
+  }
+
+  Future deleteFile({String fileName, String filePath, String fileId}) async {
+    await _db
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .child(fileId)
+        .remove();
+
+    StorageReference storageReference =
+        FirebaseStorage.instance.ref().child(filePath).getParent();
+    var deleteTask = storageReference.child(fileName).delete();
+  }
+
+  Future<void> downloadFile({String fileDownloadLink, String fileName}) async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      final dir = await getExternalStorageDirectory();
+      final downloadId = FlutterDownloader.enqueue(
+          url: fileDownloadLink,
+          savedDir: dir.path,
+          fileName: fileName,
+          showNotification: true,
+          openFileFromNotification: true);
+    } else {
+      print("Please grant the permission");
+    }
+  }
   // Document snapshot
 
   // FileModel from snapshots

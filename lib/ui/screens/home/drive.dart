@@ -38,9 +38,14 @@ class _DrivePageState extends State<DrivePage> {
   TextEditingController _folderNameController = new TextEditingController();
   List<FolderCard> foldersCard = [];
   List<FileCard> filesCard = [];
+  String appPath;
 
   void initState() {
-    PathNavigator().readblePath.add("${widget.folderName}/");
+    setState(() {
+      PathNavigator().readblePath.add("${widget.folderName}/");
+      appPath = PathNavigator().readblePath.join(",").toString();
+    });
+
     getFoldersList(widget.realFolderPath);
     getFilesList(widget.realFolderPath);
     super.initState();
@@ -235,17 +240,19 @@ class _DrivePageState extends State<DrivePage> {
     getFilesList(widget.realFolderPath);
 
     // DatabaseService(userID: user.uid).getFoldersList(widget.realFolderPath);
-
+    // var _dbRef = FirebaseDatabase.instance.reference().child('users').child(user.uid).child('documentManager').onValue;
     return StreamBuilder<Event>(
         stream: DatabaseService(
                 userID: user.uid, realFolderPath: widget.realFolderPath)
             .documentStream,
         builder: (context, snapshot) {
+          getFilesList(widget.realFolderPath);
+          getFoldersList(widget.realFolderPath);
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(
                       title: AutoSizeText(
-                        PathNavigator().readblePath.join(",").toString(),
+                        appPath,
                         overflow: TextOverflow.visible,
                       ),
                       centerTitle: true,
@@ -279,7 +286,14 @@ class _DrivePageState extends State<DrivePage> {
                             })
                         : Center(
                             child: Container(
-                              child: Text('No Items'),
+                              padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
+                              child: Text(
+                                'No Items',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: appColor),
+                              ),
                             ),
                           )
 

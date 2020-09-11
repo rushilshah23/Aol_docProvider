@@ -72,6 +72,7 @@ class _FolderCardState extends State<FolderCard> {
                         folderName: widget.folderName,
                         newFolderName: _renameFolderController.text,
                         parentPath: widget.folderPath);
+                    Navigator.pop(context);
                     // DatabaseService(userID: widget.userId).renameFolder();
                     // Navigator.pop(context);
                   }
@@ -109,6 +110,10 @@ class _FolderCardState extends State<FolderCard> {
                     leading: Icon(Icons.delete),
                     title: Text("Delete Folder"),
                     onTap: () async {
+                      DatabaseService(userID: widget.userId).deleteFolder(
+                          folderId: widget.folderId,
+                          folderName: widget.folderName,
+                          folderPath: widget.folderPath);
                       Navigator.pop(context);
                     },
                   ),
@@ -117,6 +122,7 @@ class _FolderCardState extends State<FolderCard> {
                     title: Text("Rename Folder"),
                     onTap: () {
                       renameFolderPopUp(context);
+                      Navigator.pop(context);
                     },
                   )
                 ],

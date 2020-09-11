@@ -15,6 +15,10 @@ class Wrapper extends StatelessWidget {
       return DrivePage(
         uid: user.uid,
         pid: user.uid,
+        folderId: user.uid,
+        folderPath: "${user.userEmail}/",
+        realFolderPath: "users/${user.uid}/documentManager/",
+        folderName: user.userEmail,
       );
   }
 }

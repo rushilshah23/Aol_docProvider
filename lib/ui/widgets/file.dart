@@ -1,16 +1,32 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FileCard extends StatefulWidget {
-  final DatabaseReference globalRefDB;
-  final String fileKey;
-  final String fileName;
-  final String fileDownloadLink;
+  final dynamic userId;
+  final dynamic parentId;
+  final dynamic fileId;
+  final dynamic fileName;
+  final dynamic filePath;
+  final dynamic realFilePath;
+  final dynamic documentType;
+  final dynamic fileDownloadLink;
+  // final dynamic fileSize;
+  final dynamic createdAt;
+  // final dynamic modifiedAt;
+
   FileCard(
-      {this.globalRefDB, this.fileKey, this.fileName, this.fileDownloadLink});
+      {this.userId,
+      this.parentId,
+      this.fileId,
+      this.fileName,
+      this.filePath,
+      this.realFilePath,
+      this.documentType,
+      this.fileDownloadLink,
+      this.createdAt});
   @override
   _FileCardState createState() => _FileCardState();
 }

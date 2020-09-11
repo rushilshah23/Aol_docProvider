@@ -1,9 +1,15 @@
-import 'package:Aol_docProvider/core/models/filemodel.dart';
-import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/core/models/usermodel.dart';
 
 import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
+
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
+import 'package:Aol_docProvider/ui/widgets/file.dart';
+import 'package:Aol_docProvider/ui/widgets/folders.dart';
+import 'package:Aol_docProvider/ui/widgets/loading.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +17,17 @@ import 'package:provider/provider.dart';
 class DrivePage extends StatefulWidget {
   final String uid;
   final String pid;
-  DrivePage({this.uid, this.pid});
+  final String folderId;
+  final String folderPath;
+  final String realFolderPath;
+  final String folderName;
+  DrivePage(
+      {this.uid,
+      this.pid,
+      this.folderId,
+      this.folderPath,
+      this.realFolderPath,
+      this.folderName});
 
   @override
   _DrivePageState createState() => _DrivePageState();
@@ -20,12 +36,96 @@ class DrivePage extends StatefulWidget {
 class _DrivePageState extends State<DrivePage> {
   GlobalKey<FormState> _folderNameKey = new GlobalKey<FormState>();
   TextEditingController _folderNameController = new TextEditingController();
-
-  List<FileModel> fileCards = [];
-  List<FolderModel> folderCards = [];
+  List<FolderCard> foldersCard = [];
+  List<FileCard> filesCard = [];
 
   void initState() {
+    PathNavigator().readblePath.add("${widget.folderName}/");
+    getFoldersList(widget.realFolderPath);
+    getFilesList(widget.realFolderPath);
     super.initState();
+  }
+
+  Future<List<FolderCard>> getFoldersList(String realFolderPath) async {
+    var db = FirebaseDatabase.instance;
+    var ref = db.reference();
+    await ref
+        .reference()
+        // .child(realFolderPath)
+        // .reference()
+        .child('users')
+        .child(widget.uid)
+        .child('documentManager')
+        .reference()
+        .once()
+        .then((snapshot) {
+      var data = snapshot.value;
+      var keys = snapshot.value.keys ?? 0;
+      foldersCard.clear();
+
+      for (var key in keys) {
+        if ((data[key]['documentType']) == 'documentType.folder') {
+          if (data[key]['parentId'] == widget.folderId) {
+            setState(() {
+              FolderCard folderCard = new FolderCard(
+                userId: data[key]['userId'],
+                parentId: data[key]['parentId'],
+                folderId: data[key]['folderId'],
+                folderName: data[key]['folderName'],
+                createdAt: data[key]['createdAt'],
+                documentType: data[key]['documentType'],
+                folderPath: data[key]['folderPath'],
+                realFolderPath: data[key]['realFolderPath'],
+              );
+              foldersCard.add(folderCard);
+            });
+          }
+        }
+      }
+    });
+
+    return foldersCard;
+  }
+
+  Future<List<FileCard>> getFilesList(String realFolderPath) async {
+    var db = FirebaseDatabase.instance;
+    var ref = db.reference();
+    await ref
+        .reference()
+        // .child(realFolderPath)
+
+        .child('users')
+        .child(widget.uid)
+        .child('documentManager')
+        .reference()
+        .once()
+        .then((snapshot) {
+      var data = snapshot.value;
+      var keys = snapshot.value.keys ?? 0;
+      filesCard.clear();
+
+      for (var key in keys) {
+        if ((data[key]['documentType']) == 'documentType.file') {
+          if (data[key]['parentId'] == widget.folderId) {
+            setState(() {
+              FileCard fileCard = new FileCard(
+                userId: data[key]['userId'],
+                parentId: data[key]['parentId'],
+                fileId: data[key]['fileId'],
+                fileName: data[key]['fileName'],
+                createdAt: data[key]['createdAt'],
+                documentType: data[key]['documentType'],
+                filePath: data[key]['filePath'],
+                realFilePath: data[key]['realFilePath'],
+                fileDownloadLink: data[key]['fileDownloadLink'],
+              );
+              filesCard.add(fileCard);
+            });
+          }
+        }
+      }
+    });
+    return filesCard;
   }
 
   createFolderPopUp(BuildContext context) {
@@ -59,8 +159,11 @@ class _DrivePageState extends State<DrivePage> {
                 onPressed: () async {
                   if (_folderNameKey.currentState.validate()) {
                     await DatabaseService(userID: widget.uid).createFolder(
+                      parentPath: widget.folderPath,
+                      realParentPath: widget.realFolderPath,
                       folderName: _folderNameController.text,
-                      parentId: widget.pid,
+                      // TODO FIX HERE
+                      parentId: widget.folderId,
                       type: documentType.folder,
 
                       // TODO CALL CREATE FOLDER
@@ -109,6 +212,12 @@ class _DrivePageState extends State<DrivePage> {
                     leading: Icon(Icons.cloud_upload),
                     title: Text("Upload File"),
                     onTap: () {
+                      DatabaseService(userID: widget.uid).chooseFile(
+                          parentId: widget.folderId,
+                          documentType: documentType.file,
+                          parentPath: widget.folderPath,
+                          realParentPath: widget.realFolderPath);
+
                       // TODO upload file
                     },
                   )
@@ -121,28 +230,70 @@ class _DrivePageState extends State<DrivePage> {
 
   @override
   Widget build(BuildContext context) {
-    // var user = Provider.of<UserModel>(context);
-    return Scaffold(
-        appBar: AppBar(
-            title: Text("DrivePage"),
-            centerTitle: true,
-            flexibleSpace: Container(
-              decoration: colorBox,
-            )),
-        drawer: homeDrawer(context),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            return driveOptions(context);
-          },
-          backgroundColor: appColor,
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        body: ListView(
-          children: [
-            Text('demo'),
-            // FolderGrid(),
-          ],
-        ));
+    var user = Provider.of<UserModel>(context);
+    getFoldersList(widget.realFolderPath);
+    getFilesList(widget.realFolderPath);
+
+    // DatabaseService(userID: user.uid).getFoldersList(widget.realFolderPath);
+
+    return StreamBuilder<Event>(
+        stream: DatabaseService(
+                userID: user.uid, realFolderPath: widget.realFolderPath)
+            .documentStream,
+        builder: (context, snapshot) {
+          return snapshot.hasData && !snapshot.hasError
+              ? Scaffold(
+                  appBar: AppBar(
+                      title: AutoSizeText(
+                        PathNavigator().readblePath.join(",").toString(),
+                        overflow: TextOverflow.visible,
+                      ),
+                      centerTitle: true,
+                      flexibleSpace: Container(
+                        decoration: colorBox,
+                      )),
+                  drawer: homeDrawer(context),
+                  floatingActionButton: FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      return driveOptions(context);
+                    },
+                    backgroundColor: appColor,
+                  ),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.endFloat,
+                  body: ListView(children: [
+                    (foldersCard.length + filesCard.length) != 0
+                        ? GridView.builder(
+                            physics: ScrollPhysics(),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: foldersCard.length + filesCard.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2),
+                            itemBuilder: (_, index) {
+                              return index < foldersCard.length
+                                  ? foldersCard[index]
+                                  : filesCard[index - foldersCard.length];
+                            })
+                        : Center(
+                            child: Container(
+                              child: Text('No Items'),
+                            ),
+                          )
+
+                    // GridView.builder(
+                    //     shrinkWrap: true,
+                    //     scrollDirection: Axis.vertical,
+                    //     itemCount: filesCard.length,
+                    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    //         crossAxisCount: 2),
+                    //     itemBuilder: (_, index) {
+                    //       return filesCard[index];
+                    //     }),
+                  ]))
+              : Loading();
+        });
   }
 }

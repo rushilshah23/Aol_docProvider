@@ -3,16 +3,22 @@ class FileModel {
   final dynamic parentId;
   final dynamic fileId;
   final dynamic fileName;
-  final dynamic type;
+  final dynamic filePath;
+  final dynamic realFilePath;
+  final dynamic documentType;
   final dynamic fileDownloadLink;
+  // final dynamic fileSize;
   final dynamic createdAt;
+  // final dynamic modifiedAt;
 
   FileModel(
       {this.userId,
       this.parentId,
       this.fileId,
       this.fileName,
-      this.type,
+      this.filePath,
+      this.realFilePath,
+      this.documentType,
       this.fileDownloadLink,
       this.createdAt});
 

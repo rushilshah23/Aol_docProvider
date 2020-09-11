@@ -12,7 +12,9 @@ class AuthenticationService {
   // create User object
 
   UserModel _userfromAuthentication(User user) {
-    return user != null ? UserModel(uid: user.uid) : null;
+    return user != null
+        ? UserModel(uid: user.uid, userEmail: user.email)
+        : null;
   }
 
   // Stream if user is Signed in or Signed out
@@ -27,7 +29,8 @@ class AuthenticationService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User user = result.user;
-      await DatabaseService(userID: user.uid).updateUserData(
+      await DatabaseService(userID: user.uid, userEmail: user.email)
+          .updateUserData(
         folderName: user.email,
       );
       return _userfromAuthentication(user);
@@ -58,6 +61,7 @@ class AuthenticationService {
   Future signoutEmailId() async {
     try {
       _auth.signOut();
+      // return _userfromAuthentication(null);
     } catch (error) {
       debugPrint(error.toString());
     }

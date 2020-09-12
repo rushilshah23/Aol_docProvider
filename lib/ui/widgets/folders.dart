@@ -112,6 +112,7 @@ class _FolderCardState extends State<FolderCard> {
                     title: Text("Delete Folder"),
                     onTap: () async {
                       showdeleteDialog(context);
+                      Navigator.pop(context);
                     },
                   ),
                   ListTile(

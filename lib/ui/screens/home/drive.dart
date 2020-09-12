@@ -143,6 +143,7 @@ class _DrivePageState extends State<DrivePage> {
           content: Form(
             key: _folderNameKey,
             child: TextFormField(
+                autofocus: true,
                 controller: _folderNameController,
                 validator: (String content) {
                   if (content.length != 0) {

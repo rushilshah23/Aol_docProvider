@@ -37,6 +37,7 @@ class _FileCardState extends State<FileCard> {
   GlobalKey<FormState> _renameFileKey = new GlobalKey<FormState>();
 
   void initState() {
+    // _renameFileController.text = widget.fileName;
     super.initState();
   }
 
@@ -59,6 +60,7 @@ class _FileCardState extends State<FileCard> {
           content: Form(
             key: _renameFileKey,
             child: TextFormField(
+                autofocus: true,
                 controller: _renameFileController,
                 validator: (String content) {
                   if (content.length != 0) {
@@ -73,7 +75,7 @@ class _FileCardState extends State<FileCard> {
                     } else
                       return null;
                   } else
-                    return "Enter a newfolder name";
+                    return "Enter a new file name";
                 }),
           ),
           actions: [

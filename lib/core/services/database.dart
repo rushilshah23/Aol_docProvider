@@ -192,12 +192,28 @@ class DatabaseService {
     File file = await FilePicker.getFile(type: FileType.custom);
 
     String fileName = file.path.split('/').last;
+    // StorageUploadTask uploadTask =
+    //     _dbStorage.child(parentPath).child(fileName).putFile(file);
+    // String url = await (await uploadTask.onComplete).ref.getDownloadURL();
+
+    var newKey = _db
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .push()
+        .key;
     StorageUploadTask uploadTask =
         _dbStorage.child(parentPath).child(fileName).putFile(file);
     String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    var newKey = _db.reference().child(realParentPath).push().key;
-    await _db.reference().child(realParentPath).child(newKey).set({
+    await _db
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .child(newKey)
+        .set({
       'userId': userID,
       'parentId': parentId,
       'fileId': newKey,
@@ -298,7 +314,7 @@ class DatabaseService {
         .remove();
 
     StorageReference storageReference =
-        FirebaseStorage.instance.ref().child(folderPath);
+        FirebaseStorage.instance.ref().child(folderPath).getParent();
     var deleteTask = storageReference.child(folderName).delete();
   }
 
@@ -313,6 +329,9 @@ class DatabaseService {
         .update({
       'fileName': newFileName,
     });
+    //     StorageReference storageReference =
+    //     FirebaseStorage.instance.ref().child(filePath).getParent();
+    // var renameTask = storageReference.
   }
 
   Future deleteFile({String fileName, String filePath, String fileId}) async {

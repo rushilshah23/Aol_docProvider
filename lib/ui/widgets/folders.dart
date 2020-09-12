@@ -46,6 +46,7 @@ class _FolderCardState extends State<FolderCard> {
           content: Form(
             key: _renameFolderKey,
             child: TextFormField(
+                autofocus: true,
                 controller: _renameFolderController,
                 validator: (String content) {
                   if (content.length != 0) {
@@ -123,7 +124,7 @@ class _FolderCardState extends State<FolderCard> {
                     title: Text("Rename Folder"),
                     onTap: () {
                       renameFolderPopUp(context);
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                   )
                 ],

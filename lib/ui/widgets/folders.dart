@@ -1,5 +1,6 @@
-import 'package:Aol_docProvider/Services/database.dart';
-
+import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
+import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:flutter/material.dart';
@@ -7,12 +8,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FolderCard extends StatefulWidget {
   final dynamic userId;
-  final dynamic pid;
+  final dynamic parentId;
+  final dynamic folderId;
+  final dynamic documentType;
+  final dynamic realFolderPath;
+  final dynamic folderPath;
   final dynamic folderName;
-
   final dynamic createdAt;
 
-  FolderCard({this.userId, this.pid, this.folderName, this.createdAt});
+  FolderCard(
+      {@required this.userId,
+      @required this.parentId,
+      @required this.folderId,
+      @required this.documentType,
+      @required this.realFolderPath,
+      @required this.folderPath,
+      @required this.folderName,
+      @required this.createdAt});
   @override
   _FolderCardState createState() => _FolderCardState();
 }
@@ -55,8 +67,13 @@ class _FolderCardState extends State<FolderCard> {
             FlatButton(
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
-                    DatabaseService(userID: widget.userId).renameFolder();
-                    Navigator.pop(context);
+                    DatabaseService(userID: widget.userId).renameFolder(
+                        folderId: widget.folderId,
+                        folderName: widget.folderName,
+                        newFolderName: _renameFolderController.text,
+                        parentPath: widget.folderPath);
+                    // DatabaseService(userID: widget.userId).renameFolder();
+                    // Navigator.pop(context);
                   }
                 },
                 child: Text("Ok")),
@@ -128,6 +145,17 @@ class _FolderCardState extends State<FolderCard> {
                     size: 70,
                   ),
                   onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return DrivePage(
+                        pid: widget.parentId,
+                        uid: widget.userId,
+                        folderId: widget.folderId,
+                        folderPath: widget.folderPath,
+                        realFolderPath: widget.realFolderPath,
+                        folderName: widget.folderName,
+                      );
+                    }));
                     // folder pressed
                   },
                 ),

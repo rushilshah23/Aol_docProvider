@@ -1,6 +1,6 @@
-import 'package:Aol_docProvider/Widgets/loading.dart';
-import 'package:Aol_docProvider/services/authenticationService.dart';
-import 'package:Aol_docProvider/services/constants.dart';
+import 'package:Aol_docProvider/core/services/authenticationService.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
+import 'package:Aol_docProvider/ui/widgets/loading.dart';
 import 'package:flutter/material.dart';
 
 Widget homeDrawer(BuildContext context) {

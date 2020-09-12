@@ -11,3 +11,5 @@ const BoxDecoration colorBox = BoxDecoration(
 );
 
 bool isLoading = false;
+
+enum documentType { folder, file }

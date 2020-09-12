@@ -1,15 +1,20 @@
-import 'package:Aol_docProvider/Services/database.dart';
-import 'package:Aol_docProvider/models/usermodel.dart';
-
+import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class AuthenticationService {
+  // final firebaseAuth variable
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create User object
+
   UserModel _userfromAuthentication(User user) {
-    return user != null ? UserModel(uid: user.uid) : null;
+    return user != null
+        ? UserModel(uid: user.uid, userEmail: user.email)
+        : null;
   }
 
   // Stream if user is Signed in or Signed out
@@ -24,7 +29,8 @@ class AuthenticationService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User user = result.user;
-      await DatabaseService(userID: user.uid).updateUserData(
+      await DatabaseService(userID: user.uid, userEmail: user.email)
+          .updateUserData(
         folderName: user.email,
       );
       return _userfromAuthentication(user);
@@ -50,11 +56,12 @@ class AuthenticationService {
     }
   }
 
-  // User Signs ut
+  // User Signs out
 
   Future signoutEmailId() async {
     try {
       _auth.signOut();
+      // return _userfromAuthentication(null);
     } catch (error) {
       debugPrint(error.toString());
     }

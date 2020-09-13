@@ -1,7 +1,7 @@
 import 'package:Aol_docProvider/core/services/database.dart';
-import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,8 +11,9 @@ class FolderCard extends StatefulWidget {
   final dynamic parentId;
   final dynamic folderId;
   final dynamic documentType;
-  final dynamic realFolderPath;
-  final dynamic folderPath;
+  final DatabaseReference globalRef;
+  // final dynamic realFolderPath;
+  // final dynamic folderPath;
   final dynamic folderName;
   final dynamic createdAt;
 
@@ -21,8 +22,9 @@ class FolderCard extends StatefulWidget {
       @required this.parentId,
       @required this.folderId,
       @required this.documentType,
-      @required this.realFolderPath,
-      @required this.folderPath,
+      @required this.globalRef,
+      // @required this.realFolderPath,
+      // @required this.folderPath,
       @required this.folderName,
       @required this.createdAt});
   @override
@@ -68,11 +70,16 @@ class _FolderCardState extends State<FolderCard> {
             FlatButton(
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
-                    DatabaseService(userID: widget.userId).renameFolder(
-                        folderId: widget.folderId,
-                        folderName: widget.folderName,
-                        newFolderName: _renameFolderController.text,
-                        parentPath: widget.folderPath);
+                    DatabaseService(
+                            folderId: widget.parentId,
+                            globalRef: widget.globalRef
+                                .child(widget.folderId)
+                                .reference(),
+                            userID: widget.userId)
+                        .renameFolder(
+                      folderId: widget.folderId,
+                      newFolderName: _renameFolderController.text,
+                    );
                     _renameFolderController.clear();
                     Navigator.pop(context);
                     // DatabaseService(userID: widget.userId).renameFolder();
@@ -112,10 +119,15 @@ class _FolderCardState extends State<FolderCard> {
                     leading: Icon(Icons.delete),
                     title: Text("Delete Folder"),
                     onTap: () async {
-                      DatabaseService(userID: widget.userId).deleteFolder(
-                          folderId: widget.folderId,
-                          folderName: widget.folderName,
-                          folderPath: widget.folderPath);
+                      DatabaseService(
+                              folderId: widget.parentId,
+                              globalRef:
+                                  widget.globalRef.child(widget.folderId),
+                              userID: widget.userId)
+                          .deleteFolder(
+                        folderId: widget.folderId,
+                        // folderName: widget.folderName,
+                      );
                       Navigator.pop(context);
                     },
                   ),
@@ -159,8 +171,12 @@ class _FolderCardState extends State<FolderCard> {
                         pid: widget.parentId,
                         uid: widget.userId,
                         folderId: widget.folderId,
-                        folderPath: widget.folderPath,
-                        realFolderPath: widget.realFolderPath,
+                        globalRef:
+                            widget.globalRef.child(widget.folderId).reference(),
+                        // widget.globalRef.reference(),
+
+                        // folderPath: widget.folderPath,
+                        // realFolderPath: widget.realFolderPath,
                         folderName: widget.folderName,
                       );
                     }));

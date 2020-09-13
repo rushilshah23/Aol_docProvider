@@ -1,4 +1,5 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/screens/Authentication/authentication.dart';
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,13 @@ class Wrapper extends StatelessWidget {
         uid: user.uid,
         pid: user.uid,
         folderId: user.uid,
-        folderPath: "${user.userEmail}/",
-        realFolderPath: "users/${user.uid}/documentManager/",
+        globalRef: databaseReference
+            .child('users')
+            .child(user.uid)
+            .child('documentManager')
+            .reference(),
+        // folderPath: "${user.userEmail}/",
+        // realFolderPath: "users/${user.uid}/documentManager/",
         folderName: user.userEmail,
       );
   }

@@ -1,5 +1,6 @@
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,8 +11,9 @@ class FileCard extends StatefulWidget {
   final dynamic parentId;
   final dynamic fileId;
   final dynamic fileName;
-  final dynamic filePath;
-  final dynamic realFilePath;
+  final DatabaseReference globalRef;
+  // final dynamic filePath;
+  // final dynamic realFilePath;
   final dynamic documentType;
   final dynamic fileDownloadLink;
   // final dynamic fileSize;
@@ -23,8 +25,9 @@ class FileCard extends StatefulWidget {
       this.parentId,
       this.fileId,
       this.fileName,
-      this.filePath,
-      this.realFilePath,
+      this.globalRef,
+      // this.filePath,
+      // this.realFilePath,
       this.documentType,
       this.fileDownloadLink,
       this.createdAt});
@@ -83,14 +86,16 @@ class _FileCardState extends State<FileCard> {
                 onPressed: () async {
                   if (_renameFileKey.currentState.validate()) {
                     Navigator.pop(context);
-                    DatabaseService(userID: widget.userId).renameFile(
+                    DatabaseService(
+                            folderId: widget.parentId,
+                            globalRef: widget.globalRef,
+                            userID: widget.userId)
+                        .renameFile(
                       newFileName: _renameFileController.text,
                       fileId: widget.fileId,
-                      filePath: widget.filePath,
                     );
 
                     _renameFileController.clear();
-                    //TODO RENAME FILE
                   }
                 },
                 child: Text("Ok")),
@@ -126,9 +131,13 @@ class _FileCardState extends State<FileCard> {
                     leading: Icon(Icons.cloud_download),
                     title: Text("Download File"),
                     onTap: () async {
-                      DatabaseService(userID: widget.userId).downloadFile(
-                          fileName: widget.fileName,
-                          fileDownloadLink: widget.fileDownloadLink);
+                      DatabaseService(
+                              folderId: widget.parentId,
+                              globalRef: widget.globalRef,
+                              userID: widget.userId)
+                          .downloadFile(
+                              fileName: widget.fileName,
+                              fileDownloadLink: widget.fileDownloadLink);
                       //  TODO DOWNLOAD FILE
                     },
                   ),
@@ -136,10 +145,14 @@ class _FileCardState extends State<FileCard> {
                     leading: Icon(Icons.delete),
                     title: Text("Delete File"),
                     onTap: () async {
-                      DatabaseService(userID: widget.userId).deleteFile(
-                          fileId: widget.fileId,
-                          fileName: widget.fileName,
-                          filePath: widget.filePath);
+                      DatabaseService(
+                              folderId: widget.parentId,
+                              globalRef: widget.globalRef,
+                              userID: widget.userId)
+                          .deleteFile(
+                        fileId: widget.fileId,
+                        fileName: widget.fileName,
+                      );
                       // delete file
                       Navigator.pop(context);
                     },

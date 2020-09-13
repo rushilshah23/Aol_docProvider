@@ -6,23 +6,15 @@ import 'package:flutter/cupertino.dart';
 class Crud extends ChangeNotifier {
   // Folder Functions
 
-  deleteFolder() {
-    // TODO DELETE FOLDER
-  }
+  deleteFolder() {}
 
-  renameFolder({String pid, String fol}) {
-    // RENAME FOLDER
-  }
+  renameFolder({String pid, String fol}) {}
 
-  moveFolder() {
-    // MOVE FOLDER
-  }
+  moveFolder() {}
 
 // File Functions
 
   Future<void> chooseFile() async {
-    // TODO UPLOAD FILE
-
     File file = await FilePicker.getFile(type: FileType.custom);
     String fileName = file.path.split('/').last;
     print("This is filename  $fileName");
@@ -32,27 +24,15 @@ class Crud extends ChangeNotifier {
   // Future<void> uploadFile(
   //     {String userId, String folderId, String fileName, File file}) {}
 
-  deleteFile() {
-    // TODO DELETE FILE
-  }
+  deleteFile() {}
 
-  renameFile() {
-    // TODO RENAME FILE
-  }
+  renameFile() {}
 
-  moveFile() {
-    // TODO MOVE FILE
-  }
+  moveFile() {}
 
-  downloadFile() {
-    // TODO DOWNLOAD FILE
-  }
+  downloadFile() {}
 
-  viewFile() {
-    // TODO VIEW FILE
-  }
+  viewFile() {}
 
-  void loadFirebaseData({String folderId}) {
-    // TODO LOAD FIREBASE DATA
-  }
+  void loadFirebaseData({String folderId}) {}
 }

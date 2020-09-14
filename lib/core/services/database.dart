@@ -1,27 +1,25 @@
 import 'dart:io';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/Widgets/folders.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/file.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:firebase_database/firebase_database.dart";
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class DatabaseService {
   final String userID;
   final String userEmail;
-  final DatabaseReference globalRef;
+
   final String folderId;
 
   DatabaseService({
     @required this.userID,
-    @required this.globalRef,
     this.userEmail,
     @required this.folderId,
   });
@@ -36,62 +34,22 @@ class DatabaseService {
   Future updateUserData({String folderName}) async {
     // DatabaseReference _createUserDrive = _db.reference();
     // await _createUserDrive.reference().child('users').child(userID)
-    await globalRef.set({
-      'folderName': userEmail,
-      'userId': userID,
-    });
-  }
 
-  Future<List<FolderCard>> getFoldersList() async {
-    await globalRef.reference().once().then((snapshot) {
-      var data = snapshot.value;
-      var keys = snapshot.value.keys ?? 0;
-      foldersCard.clear();
-
-      for (var key in keys) {
-        if ((data[key]['documentType']) == 'documentType.folder') {
-          if (data[key]['parentId'] == folderId) {
-            FolderCard folderCard = new FolderCard(
-              globalRef: globalRef,
-              userId: data[key]['userId'],
-              parentId: data[key]['parentId'],
-              folderId: data[key]['folderId'],
-              folderName: data[key]['folderName'],
-              createdAt: data[key]['createdAt'],
-              documentType: data[key]['documentType'],
-            );
-            foldersCard.add(folderCard);
-          }
-        }
-      }
-    });
-    return foldersCard;
-  }
-
-  Future<List<FileCard>> getFilesList() async {
-    await globalRef.reference().reference().once().then((snapshot) {
-      var data = snapshot.value;
-      var keys = snapshot.value.keys ?? 0;
-      filesCard.clear();
-
-      for (var key in keys) {
-        if ((data[key]['documentType']) == 'documentType.file') {
-          if (data[key]['parentId'] == folderId) {
-            FileCard fileCard = new FileCard(
-              userId: data[key]['userId'],
-              parentId: data[key]['parentId'],
-              fileId: data[key]['fileId'],
-              fileName: data[key]['fileName'],
-              createdAt: data[key]['createdAt'],
-              documentType: data[key]['documentType'],
-              fileDownloadLink: data[key]['fileDownloadLink'],
-            );
-            filesCard.add(fileCard);
-          }
-        }
-      }
-    });
-    return filesCard;
+    // databaseReference = databaseReference
+    //     .child('users')
+    //     .child(userID)
+    //     // .child('documentManager')
+    //     .reference();
+    // await databaseReference
+    //     // .reference()
+    //     // .child('users')
+    //     // .child(userID)
+    //     // .child('documentManager')
+    //     // .reference()
+    //     .set({
+    //   'folderName': userEmail,
+    //   'userId': userID,
+    // });
   }
 
   Future createFolder({
@@ -99,7 +57,7 @@ class DatabaseService {
     String folderName,
     documentType documentType,
   }) async {
-    var newKey = globalRef.push().key;
+    var newKey = globalRef.reference().push().key;
     // var newKey = globalRef.reference().push().key;
 
     await globalRef.child(newKey).set({
@@ -112,7 +70,6 @@ class DatabaseService {
     });
   }
 
-  // Future deleteFolder({String folderId}) {}
   Future chooseFile({String parentId, documentType documentType}) async {
     File file = await FilePicker.getFile(type: FileType.custom);
 
@@ -121,7 +78,7 @@ class DatabaseService {
     //     _dbStorage.child(parentPath).child(fileName).putFile(file);
     // String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    var newKey = globalRef.push().key;
+    var newKey = globalRef.reference().push().key;
     // var newKey = globalRef.reference().push().key;
 
     StorageUploadTask uploadTask = _dbStorage
@@ -155,7 +112,7 @@ class DatabaseService {
   Future deleteFolder({
     String folderId,
   }) async {
-    String ifexist = globalRef.child(folderId).path;
+    String ifexist = globalRef.reference().child(folderId).path;
     // globalRef.reference().child(folderId).path;
 
     await globalRef.child(folderId).remove();

@@ -1,6 +1,7 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
-import 'package:Aol_docProvider/core/services/pathnavigator.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,14 +32,19 @@ class AuthenticationService {
           email: email, password: password);
       User user = result.user;
       await DatabaseService(
-              userID: user.uid,
-              userEmail: user.email,
-              folderId: user.uid,
-              globalRef:
-                  databaseReference.child('users').child(user.uid).reference())
-          .updateUserData(
-        folderName: user.email,
-      );
+        userID: user.uid,
+        userEmail: user.email,
+        folderId: user.uid,
+        // globalRef:
+        //     databaseReference.child('users').child(user.uid).reference()
+      ).createFolder(
+          documentType: documentType.folder,
+          folderName: user.email,
+          parentId: user.uid);
+
+      // .updateUserData(
+      //   folderName: user.email,
+      // );
       return _userfromAuthentication(user);
     } catch (e) {
       debugPrint(e.toString());
@@ -54,9 +60,10 @@ class AuthenticationService {
           email: email, password: password);
       User user = result.user;
       DatabaseService(
-          userID: user.uid,
-          folderId: user.uid,
-          globalRef: databaseReference.reference());
+        userID: user.uid,
+        folderId: user.uid,
+        // globalRef: databaseReference.reference()
+      );
 
       return _userfromAuthentication(user);
     } catch (e) {

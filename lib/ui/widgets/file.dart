@@ -87,9 +87,7 @@ class _FileCardState extends State<FileCard> {
                   if (_renameFileKey.currentState.validate()) {
                     Navigator.pop(context);
                     DatabaseService(
-                            folderId: widget.parentId,
-                            globalRef: widget.globalRef,
-                            userID: widget.userId)
+                            folderId: widget.parentId, userID: widget.userId)
                         .renameFile(
                       newFileName: _renameFileController.text,
                       fileId: widget.fileId,
@@ -132,13 +130,10 @@ class _FileCardState extends State<FileCard> {
                     title: Text("Download File"),
                     onTap: () async {
                       DatabaseService(
-                              folderId: widget.parentId,
-                              globalRef: widget.globalRef,
-                              userID: widget.userId)
+                              folderId: widget.parentId, userID: widget.userId)
                           .downloadFile(
                               fileName: widget.fileName,
                               fileDownloadLink: widget.fileDownloadLink);
-                      //  TODO DOWNLOAD FILE
                     },
                   ),
                   ListTile(
@@ -146,9 +141,7 @@ class _FileCardState extends State<FileCard> {
                     title: Text("Delete File"),
                     onTap: () async {
                       DatabaseService(
-                              folderId: widget.parentId,
-                              globalRef: widget.globalRef,
-                              userID: widget.userId)
+                              folderId: widget.parentId, userID: widget.userId)
                           .deleteFile(
                         fileId: widget.fileId,
                         fileName: widget.fileName,

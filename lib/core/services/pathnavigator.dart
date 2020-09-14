@@ -1,4 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 
-FirebaseDatabase _firebaseDatabase = FirebaseDatabase.instance;
-DatabaseReference databaseReference = _firebaseDatabase.reference();
+final FirebaseDatabase _firebaseDatabase = FirebaseDatabase.instance;
+DatabaseReference globalRef = _firebaseDatabase
+    .reference()
+    .child('DocumentManager')
+    .child('users')
+    .reference();

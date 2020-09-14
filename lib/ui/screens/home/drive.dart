@@ -1,5 +1,6 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
 import 'package:Aol_docProvider/ui/widgets/file.dart';
@@ -14,18 +15,20 @@ class DrivePage extends StatefulWidget {
   final String uid;
   final String pid;
   final String folderId;
-  final DatabaseReference globalRef;
+  final DatabaseReference ref;
+
   // final String folderPath;
   // final String realFolderPath;
   final String folderName;
-  DrivePage(
-      {this.uid,
-      this.pid,
-      this.folderId,
-      // this.folderPath,
-      // this.realFolderPath,
-      this.folderName,
-      this.globalRef});
+  DrivePage({
+    this.uid,
+    this.pid,
+    this.folderId,
+    this.ref,
+    // this.folderPath,
+    // this.realFolderPath,
+    this.folderName,
+  });
 
   @override
   _DrivePageState createState() => _DrivePageState();
@@ -39,6 +42,8 @@ class _DrivePageState extends State<DrivePage> {
   String appPath, folderappBar;
 
   void initState() {
+    globalRef = globalRef.reference().child(widget.folderId);
+    // databaseReference = databaseReference.child(widget.folderId).reference();
     // setState(() {
     //   getFilesList();
     //   getFoldersList();
@@ -48,7 +53,7 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   Future<List<FolderCard>> getFoldersList() async {
-    await widget.globalRef.once().then((snapshot) {
+    await globalRef.reference().once().then((snapshot) {
       var data = snapshot.value;
       var keys = snapshot.value.keys;
       foldersCard.clear();
@@ -59,7 +64,7 @@ class _DrivePageState extends State<DrivePage> {
             // if (data[key]['parentId'] == widget.folderId) {
             setState(() {
               FolderCard folderCard = new FolderCard(
-                globalRef: widget.globalRef.child(widget.uid),
+                globalRef: globalRef,
                 userId: data[key]['userId'],
                 parentId: data[key]['parentId'],
                 folderId: data[key]['folderId'],
@@ -84,7 +89,7 @@ class _DrivePageState extends State<DrivePage> {
   Future<List<FileCard>> getFilesList() async {
     // var db = FirebaseDatabase.instance;
     // var ref = db.reference();
-    await widget.globalRef.once().then((snapshot) {
+    await globalRef.reference().once().then((snapshot) {
       var data = snapshot.value;
       var keys = snapshot.value.keys;
       filesCard.clear();
@@ -95,7 +100,7 @@ class _DrivePageState extends State<DrivePage> {
             // if (data[key]['parentId'] == widget.folderId) {
             setState(() {
               FileCard fileCard = new FileCard(
-                globalRef: widget.globalRef,
+                globalRef: globalRef,
                 userId: data[key]['userId'],
                 parentId: data[key]['parentId'],
                 fileId: data[key]['fileId'],
@@ -146,13 +151,12 @@ class _DrivePageState extends State<DrivePage> {
                 onPressed: () async {
                   if (_folderNameKey.currentState.validate()) {
                     await DatabaseService(
-                            folderId: widget.folderId,
-                            userID: widget.uid,
-                            globalRef: widget.globalRef)
-                        .createFolder(
-                            documentType: documentType.folder,
-                            folderName: _folderNameController.text,
-                            parentId: widget.folderId);
+                      folderId: widget.folderId,
+                      userID: widget.uid,
+                    ).createFolder(
+                        documentType: documentType.folder,
+                        folderName: _folderNameController.text,
+                        parentId: widget.folderId);
                     _folderNameController.clear();
                     Navigator.pop(context);
                   }
@@ -198,12 +202,11 @@ class _DrivePageState extends State<DrivePage> {
                     title: Text("Upload File"),
                     onTap: () {
                       DatabaseService(
-                              folderId: widget.folderId,
-                              userID: widget.uid,
-                              globalRef: widget.globalRef)
-                          .chooseFile(
-                              documentType: documentType.file,
-                              parentId: widget.folderId);
+                        folderId: widget.folderId,
+                        userID: widget.uid,
+                      ).chooseFile(
+                          documentType: documentType.file,
+                          parentId: widget.folderId);
                     },
                   )
                 ],
@@ -215,7 +218,7 @@ class _DrivePageState extends State<DrivePage> {
 
   Future<bool> gobackFolder() async {
     setState(() {
-      widget.globalRef.parent().reference();
+      globalRef.reference().parent().reference();
     });
     return true;
   }
@@ -230,10 +233,9 @@ class _DrivePageState extends State<DrivePage> {
     // var _dbRef = FirebaseDatabase.instance.reference().child('users').child(user.uid).child('documentManager').onValue;
     return StreamBuilder<Event>(
         stream: DatabaseService(
-                folderId: widget.folderId,
-                userID: widget.uid,
-                globalRef: widget.globalRef)
-            .documentStream,
+          folderId: widget.folderId,
+          userID: widget.uid,
+        ).documentStream,
         builder: (context, snapshot) {
           getFilesList();
           getFoldersList();

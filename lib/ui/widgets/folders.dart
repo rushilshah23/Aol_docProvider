@@ -1,4 +1,5 @@
 import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -72,9 +73,9 @@ class _FolderCardState extends State<FolderCard> {
                   if (_renameFolderKey.currentState.validate()) {
                     DatabaseService(
                             folderId: widget.parentId,
-                            globalRef: widget.globalRef
-                                .child(widget.folderId)
-                                .reference(),
+                            // globalRef: widget.globalRef
+                            //     .child(widget.folderId)
+                            //     .reference(),
                             userID: widget.userId)
                         .renameFolder(
                       folderId: widget.folderId,
@@ -121,8 +122,8 @@ class _FolderCardState extends State<FolderCard> {
                     onTap: () async {
                       DatabaseService(
                               folderId: widget.parentId,
-                              globalRef:
-                                  widget.globalRef.child(widget.folderId),
+                              // globalRef:
+                              //     widget.globalRef.child(widget.folderId),
                               userID: widget.userId)
                           .deleteFolder(
                         folderId: widget.folderId,
@@ -171,8 +172,7 @@ class _FolderCardState extends State<FolderCard> {
                         pid: widget.parentId,
                         uid: widget.userId,
                         folderId: widget.folderId,
-                        globalRef:
-                            widget.globalRef.child(widget.folderId).reference(),
+
                         // widget.globalRef.reference(),
 
                         // folderPath: widget.folderPath,

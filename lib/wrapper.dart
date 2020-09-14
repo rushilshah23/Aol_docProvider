@@ -17,11 +17,11 @@ class Wrapper extends StatelessWidget {
         uid: user.uid,
         pid: user.uid,
         folderId: user.uid,
-        globalRef: databaseReference
-            .child('users')
-            .child(user.uid)
-            .child('documentManager')
-            .reference(),
+
+        // .child('users')
+        // .child(user.uid)
+        // .child('documentManager')
+        // .reference(),
         // folderPath: "${user.userEmail}/",
         // realFolderPath: "users/${user.uid}/documentManager/",
         folderName: user.userEmail,

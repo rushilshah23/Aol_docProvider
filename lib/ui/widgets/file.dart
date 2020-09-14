@@ -87,10 +87,11 @@ class _FileCardState extends State<FileCard> {
                   if (_renameFileKey.currentState.validate()) {
                     Navigator.pop(context);
                     DatabaseService(
-                            folderId: widget.parentId, userID: widget.userId)
+                            userID: widget.userId, driveRef: widget.globalRef)
                         .renameFile(
                       newFileName: _renameFileController.text,
                       fileId: widget.fileId,
+                      driveRef: widget.globalRef,
                     );
 
                     _renameFileController.clear();
@@ -129,11 +130,9 @@ class _FileCardState extends State<FileCard> {
                     leading: Icon(Icons.cloud_download),
                     title: Text("Download File"),
                     onTap: () async {
-                      DatabaseService(
-                              folderId: widget.parentId, userID: widget.userId)
-                          .downloadFile(
-                              fileName: widget.fileName,
-                              fileDownloadLink: widget.fileDownloadLink);
+                      DatabaseService(userID: widget.userId).downloadFile(
+                          fileName: widget.fileName,
+                          fileDownloadLink: widget.fileDownloadLink);
                     },
                   ),
                   ListTile(
@@ -141,10 +140,11 @@ class _FileCardState extends State<FileCard> {
                     title: Text("Delete File"),
                     onTap: () async {
                       DatabaseService(
-                              folderId: widget.parentId, userID: widget.userId)
+                              userID: widget.userId, driveRef: widget.globalRef)
                           .deleteFile(
                         fileId: widget.fileId,
                         fileName: widget.fileName,
+                        driveRef: widget.globalRef,
                       );
                       // delete file
                       Navigator.pop(context);
@@ -211,7 +211,7 @@ class _FileCardState extends State<FileCard> {
                       ),
                       SizedBox(width: 5),
                       IconButton(
-                          icon: FaIcon(FontAwesomeIcons.ellipsisH),
+                          icon: FaIcon(FontAwesomeIcons.ellipsisV),
                           onPressed: () {
                             fileOptions(context);
                           }),

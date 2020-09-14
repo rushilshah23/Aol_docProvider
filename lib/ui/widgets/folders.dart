@@ -1,5 +1,5 @@
 import 'package:Aol_docProvider/core/services/database.dart';
-import 'package:Aol_docProvider/core/services/pathnavigator.dart';
+
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -72,15 +72,15 @@ class _FolderCardState extends State<FolderCard> {
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
                     DatabaseService(
-                            folderId: widget.parentId,
+
                             // globalRef: widget.globalRef
                             //     .child(widget.folderId)
                             //     .reference(),
                             userID: widget.userId)
                         .renameFolder(
-                      folderId: widget.folderId,
-                      newFolderName: _renameFolderController.text,
-                    );
+                            folderId: widget.folderId,
+                            newFolderName: _renameFolderController.text,
+                            driveRef: widget.globalRef);
                     _renameFolderController.clear();
                     Navigator.pop(context);
                     // DatabaseService(userID: widget.userId).renameFolder();
@@ -121,12 +121,13 @@ class _FolderCardState extends State<FolderCard> {
                     title: Text("Delete Folder"),
                     onTap: () async {
                       DatabaseService(
-                              folderId: widget.parentId,
+
                               // globalRef:
                               //     widget.globalRef.child(widget.folderId),
                               userID: widget.userId)
                           .deleteFolder(
                         folderId: widget.folderId,
+                        driveRef: widget.globalRef,
                         // folderName: widget.folderName,
                       );
                       Navigator.pop(context);
@@ -172,6 +173,8 @@ class _FolderCardState extends State<FolderCard> {
                         pid: widget.parentId,
                         uid: widget.userId,
                         folderId: widget.folderId,
+                        ref:
+                            widget.globalRef.child(widget.folderId).reference(),
 
                         // widget.globalRef.reference(),
 

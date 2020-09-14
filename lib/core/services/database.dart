@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/Widgets/folders.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/file.dart';
@@ -14,14 +13,15 @@ import 'package:permission_handler/permission_handler.dart';
 
 class DatabaseService {
   final String userID;
-  final String userEmail;
-
-  final String folderId;
+  // final String userEmail;
+  final DatabaseReference driveRef;
+  // final String folderId;
 
   DatabaseService({
     @required this.userID,
-    this.userEmail,
-    @required this.folderId,
+    this.driveRef,
+    // this.userEmail,
+    // @required this.folderId,
   });
 
   final FirebaseDatabase _db = FirebaseDatabase.instance;
@@ -32,21 +32,30 @@ class DatabaseService {
   List<FolderCard> foldersCard = [];
 
   Future updateUserData({String folderName}) async {
-    // DatabaseReference _createUserDrive = _db.reference();
-    // await _createUserDrive.reference().child('users').child(userID)
-
-    // databaseReference = databaseReference
+    DatabaseReference _createUserDrive = _db.reference();
+    // await _createUserDrive
+    //     .reference()
     //     .child('users')
     //     .child(userID)
-    //     // .child('documentManager')
+    //     .child('documentManager')
+    //     .reference()
+
+    // globalRef = globalRef
+    //     .reference()
+    //     .child('users')
+    //     .child(userID)
+    //     .child('documentManager')
     //     .reference();
+
     // await databaseReference
     //     // .reference()
     //     // .child('users')
     //     // .child(userID)
     //     // .child('documentManager')
     //     // .reference()
-    //     .set({
+    // await globalRef
+
+    // globalRef.reference().set({
     //   'folderName': userEmail,
     //   'userId': userID,
     // });
@@ -56,11 +65,13 @@ class DatabaseService {
     String parentId,
     String folderName,
     documentType documentType,
+    DatabaseReference driveRef,
   }) async {
-    var newKey = globalRef.reference().push().key;
+    var newKey = driveRef.reference().push().key;
+    print(newKey);
     // var newKey = globalRef.reference().push().key;
 
-    await globalRef.child(newKey).set({
+    await driveRef.child(newKey).set({
       'userId': userID,
       'parentId': parentId,
       'folderId': newKey,
@@ -70,7 +81,10 @@ class DatabaseService {
     });
   }
 
-  Future chooseFile({String parentId, documentType documentType}) async {
+  Future chooseFile(
+      {String parentId,
+      documentType documentType,
+      DatabaseReference driveRef}) async {
     File file = await FilePicker.getFile(type: FileType.custom);
 
     String fileName = file.path.split('/').last;
@@ -78,17 +92,17 @@ class DatabaseService {
     //     _dbStorage.child(parentPath).child(fileName).putFile(file);
     // String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    var newKey = globalRef.reference().push().key;
+    var newKey = driveRef.reference().push().key;
     // var newKey = globalRef.reference().push().key;
 
     StorageUploadTask uploadTask = _dbStorage
-        .child(globalRef.toString())
+        .child(driveRef.reference().toString())
         .child(newKey)
         .child(fileName)
         .putFile(file);
     String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    await globalRef.child(newKey).set({
+    await driveRef.child(newKey).set({
       'userId': userID,
       'parentId': parentId,
       'fileId': newKey,
@@ -102,8 +116,9 @@ class DatabaseService {
   Future renameFolder({
     String newFolderName,
     String folderId,
+    DatabaseReference driveRef,
   }) async {
-    await globalRef.child(folderId).update({
+    await driveRef.reference().child(folderId).update({
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -111,18 +126,19 @@ class DatabaseService {
 
   Future deleteFolder({
     String folderId,
+    DatabaseReference driveRef,
   }) async {
-    String ifexist = globalRef.reference().child(folderId).path;
+    // String ifexist = globalRef.reference().child(folderId).path;
     // globalRef.reference().child(folderId).path;
 
-    await globalRef.child(folderId).remove();
+    await driveRef.reference().child(folderId).remove();
     // await globalRef.reference().child(folderId).remove();
 
     // String ifexist =
     //     // _dbStorage.child(globalRef.toString()).child(folderId).path;
     //     globalRef.reference().child(folderId).path;
 
-    print("ifexists path = $ifexist");
+    // print("ifexists path = $ifexist");
     // if (ifexist != null) {
     //   await _dbStorage.child(globalRef.toString()).child(folderId).delete();
     // }
@@ -132,16 +148,19 @@ class DatabaseService {
     // var deleteTask = storageReference.child(folderName).delete();
   }
 
-  Future renameFile({String newFileName, String fileId}) async {
-    await globalRef.child(fileId).update({
+  Future renameFile(
+      {String newFileName, String fileId, DatabaseReference driveRef}) async {
+    await driveRef.reference().child(fileId).update({
       'fileName': newFileName,
+      'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
   }
 
-  Future deleteFile({String fileName, String fileId}) async {
-    await globalRef.child(fileId).remove();
+  Future deleteFile(
+      {String fileName, String fileId, DatabaseReference driveRef}) async {
+    await driveRef.reference().child(fileId).remove();
     await _dbStorage
-        .child(globalRef.toString())
+        .child(driveRef.reference().toString())
         .child(fileId)
         .child(fileName)
         .delete();
@@ -167,12 +186,14 @@ class DatabaseService {
   }
 
   Stream<Event> get documentStream {
-    return _db
-        .reference()
-        .child('users')
-        .child(userID)
-        .child('documentManager')
-        .onValue;
+    // return _db
+    //     .reference()
+    //     .child('users')
+    //     .child(userID)
+    //     .child('documentManager')
+    //     .onValue;
+
+    return driveRef.onValue;
   }
 
   // _getFoldersFromSnapshot(DataSnapshot snapshot) {

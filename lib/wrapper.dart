@@ -17,6 +17,12 @@ class Wrapper extends StatelessWidget {
         uid: user.uid,
         pid: user.uid,
         folderId: user.uid,
+        ref: globalRef
+            .reference()
+            .child('users')
+            .child(user.uid)
+            .child('documentManager')
+            .reference(),
 
         // .child('users')
         // .child(user.uid)

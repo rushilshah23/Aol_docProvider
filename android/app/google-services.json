@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "714418814663",
+    "firebase_url": "https://aol-documentmanager.firebaseio.com",
+    "project_id": "aol-documentmanager",
+    "storage_bucket": "aol-documentmanager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714418814663:android:7044a360a06efe253508e2",
+        "android_client_info": {
+          "package_name": "com.example.Aol_docProvider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "714418814663-hlvafnjkff17agt0gde5bkpqh1t7ckep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfgGwMHzAx9XHjYOy7T2UbqI3l48pkHPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "714418814663-hlvafnjkff17agt0gde5bkpqh1t7ckep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -173,8 +173,11 @@ class _FolderCardState extends State<FolderCard> {
                         pid: widget.parentId,
                         uid: widget.userId,
                         folderId: widget.folderId,
-                        ref:
-                            widget.globalRef.child(widget.folderId).reference(),
+                        ref: widget.globalRef
+                            .reference()
+                            .child(widget.folderId)
+                            .reference(),
+                        // widget.globalRef.child(widget.folderId),
 
                         // widget.globalRef.reference(),
 

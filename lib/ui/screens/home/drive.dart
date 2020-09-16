@@ -46,94 +46,95 @@ class _DrivePageState extends State<DrivePage> {
 
   void initState() {
     driveRef = widget.ref.reference();
+    print(driveRef.path);
     // .child(widget.folderId);
     reference = db.reference();
     // databaseReference = databaseReference.child(widget.folderId).reference();
-    setState(() {
-      getFilesList();
-      getFoldersList();
-    });
+    // setState(() {
+    // getFilesList();
+    // getFoldersList();
+    // });
+    getFoldersList();
+    getFilesList();
 
     super.initState();
   }
 
-  getFoldersList() async {
+  Future<List<FolderCard>> getFoldersList() async {
     await driveRef.reference().once().then((snapshot) {
-      var data = snapshot.value;
-      var keys = snapshot.value.keys;
-      foldersCard.clear();
+      if (snapshot.value != 0) {
+        try {
+          var data = snapshot.value;
+          var keys = snapshot.value.keys ?? 0;
+          foldersCard.clear();
 
-      try {
-        for (var key in keys) {
-          if (key != null) {
-            if ((data[key]['documentType']) == 'documentType.folder') {
-              // if (data[key]['parentId'] == widget.folderId) {
-              setState(() {
-                FolderCard folderCard = new FolderCard(
-                  globalRef: driveRef.reference(),
-                  userId: data[key]['userId'],
-                  parentId: data[key]['parentId'],
-                  folderId: data[key]['folderId'],
-                  folderName: data[key]['folderName'],
-                  createdAt: data[key]['createdAt'],
-                  documentType: data[key]['documentType'],
-                );
-                foldersCard.add(folderCard);
-              });
+          if (keys != 0) {
+            for (var key in keys) {
+              if ((data[key]['documentType']) == 'documentType.folder') {
+                // if (data[key]['parentId'] == widget.folderId) {
+                setState(() {
+                  FolderCard folderCard = new FolderCard(
+                    globalRef: driveRef,
+                    userId: data[key]['userId'] ?? '',
+                    parentId: data[key]['parentId'] ?? '',
+                    folderId: data[key]['folderId'] ?? '',
+                    folderName: data[key]['folderName'] ?? '',
+                    createdAt: data[key]['createdAt'] ?? '',
+                    documentType: data[key]['documentType'] ?? '',
+                  );
+                  foldersCard.add(folderCard);
+                });
+                // }
+              }
+
+              // else {
+              //   getFoldersList();
               // }
             }
-          } else
-            return null;
-
-          // else {
-          //   getFoldersList();
-          // }
+          }
+        } catch (e) {
+          debugPrint(e.toString());
         }
-      } catch (e) {
-        debugPrint(e.toString());
       }
-
-      return null;
     });
 
     return foldersCard;
   }
 
-  getFilesList() async {
+  Future<List<FileCard>> getFilesList() async {
     // var db = FirebaseDatabase.instance;
     // var ref = db.reference();
     await driveRef.reference().once().then((snapshot) {
-      var data = snapshot.value;
-      var keys = snapshot.value.keys ?? null;
-      filesCard.clear();
-      try {
-        for (var key in keys) {
-          if (key != null) {
-            if ((data[key]['documentType']) == 'documentType.file') {
-              // if (data[key]['parentId'] == widget.folderId) {
-              setState(() {
-                FileCard fileCard = new FileCard(
-                  globalRef: driveRef.reference(),
-                  userId: data[key]['userId'],
-                  parentId: data[key]['parentId'],
-                  fileId: data[key]['fileId'],
-                  fileName: data[key]['fileName'],
-                  createdAt: data[key]['createdAt'],
-                  documentType: data[key]['documentType'],
-                  fileDownloadLink: data[key]['fileDownloadLink'],
-                );
-                filesCard.add(fileCard);
-              });
-              // }
+      if (snapshot.value != 0) {
+        var data = snapshot.value;
+        var keys = snapshot.value.keys ?? 0;
+        filesCard.clear();
+        try {
+          if (keys != 0) {
+            for (var key in keys) {
+              if ((data[key]['documentType']) == 'documentType.file') {
+                // if (data[key]['parentId'] == widget.folderId) {
+                setState(() {
+                  FileCard fileCard = new FileCard(
+                    globalRef: driveRef,
+                    userId: data[key]['userId'] ?? '',
+                    parentId: data[key]['parentId'] ?? '',
+                    fileId: data[key]['fileId'] ?? '',
+                    fileName: data[key]['fileName'] ?? '',
+                    createdAt: data[key]['createdAt'] ?? '',
+                    documentType: data[key]['documentType'] ?? '',
+                    fileDownloadLink: data[key]['fileDownloadLink'] ?? '',
+                  );
+                  filesCard.add(fileCard);
+                });
+                // }
+              }
             }
-          } else
-            return null;
+          }
+        } catch (e) {
+          debugPrint(e.toString());
         }
-      } catch (e) {
-        debugPrint(e.toString());
       }
-
-      return null;
     });
     return filesCard;
   }
@@ -248,14 +249,17 @@ class _DrivePageState extends State<DrivePage> {
     // DatabaseService(userID: user.uid).getFoldersList(widget.realFolderPath);
     // var _dbRef = FirebaseDatabase.instance.reference().child('users').child(user.uid).child('documentManager').onValue;
     return StreamBuilder<Event>(
+        // stream: driveRef.reference().onValue,
         stream: db
             .reference()
             .child('users')
             .child(user.uid)
             .child('documentManager')
+            .reference()
             .onValue,
-        // DatabaseService(userID: widget.uid, driveRef: driveRef.reference())
-        //     .documentStream,
+        // stream:
+        //     DatabaseService(userID: widget.uid, driveRef: driveRef.reference())
+        //         .documentStream,
         builder: (context, snapshot) {
           getFilesList();
           getFoldersList();
@@ -284,19 +288,43 @@ class _DrivePageState extends State<DrivePage> {
                   body: WillPopScope(
                     onWillPop: gobackFolder,
                     child: ListView(children: [
-                      (foldersCard.length + filesCard.length) != 0
+                      // Text(
+                      //     "length of lsit = ${foldersCard.length + filesCard.length}"),
+                      foldersCard.length != 0 || filesCard.length != 0
+                          // && (foldersCard.length + filesCard.length) != null
                           ? GridView.builder(
                               physics: ScrollPhysics(),
                               shrinkWrap: true,
                               scrollDirection: Axis.vertical,
-                              itemCount: foldersCard.length + filesCard.length,
+                              itemCount:
+                                  (foldersCard.length + filesCard.length),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2),
                               itemBuilder: (_, index) {
-                                return index < foldersCard.length
+                                // getFoldersList();
+                                // getFilesList();
+                                // if (index >= 0) {
+                                // if (index is int) {
+                                return index < foldersCard.length && index >= 0
                                     ? foldersCard[index]
                                     : filesCard[index - foldersCard.length];
+
+                                // }
+                                // else
+                                //   return Center(
+                                //     child: Container(
+                                //       padding:
+                                //           EdgeInsets.fromLTRB(50, 300, 50, 200),
+                                //       child: Text(
+                                //         'No Items left',
+                                //         style: TextStyle(
+                                //             fontSize: 40,
+                                //             fontWeight: FontWeight.bold,
+                                //             color: appColor),
+                                //       ),
+                                //     ),
+                                //   );
                               })
                           : Center(
                               child: Container(

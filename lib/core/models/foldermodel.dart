@@ -1,22 +1,27 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+
 class FolderModel {
   final dynamic userId;
   final dynamic parentId;
   final dynamic folderId;
   final dynamic documentType;
-  final dynamic realFolderPath;
-  final dynamic folderPath;
+  final DatabaseReference globalRef;
+  // final dynamic realFolderPath;
+  // final dynamic folderPath;
   final dynamic folderName;
   final dynamic createdAt;
 
   FolderModel(
-      {this.userId,
-      this.parentId,
-      this.folderId,
-      this.documentType,
-      this.realFolderPath,
-      this.folderPath,
-      this.folderName,
-      this.createdAt});
+      {@required this.userId,
+      @required this.parentId,
+      @required this.folderId,
+      @required this.documentType,
+      @required this.globalRef,
+      // @required this.realFolderPath,
+      // @required this.folderPath,
+      @required this.folderName,
+      @required this.createdAt});
 
   // FolderModel.fromMap(Map snapshot, String folderId)
   //     : userId = snapshot['userId'] ?? '',

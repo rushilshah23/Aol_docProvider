@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 import 'package:Aol_docProvider/ui/Widgets/folders.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/file.dart';
@@ -40,12 +41,15 @@ class DatabaseService {
     //     .child('documentManager')
     //     .reference()
 
-    // globalRef = globalRef
-    //     .reference()
-    //     .child('users')
-    //     .child(userID)
-    //     .child('documentManager')
-    //     .reference();
+    globalRef
+        .reference()
+        .child('users')
+        .child(userID)
+        .child('documentManager')
+        .set({
+      'folderName': folderName,
+      'userId': userID,
+    });
 
     // await databaseReference
     //     // .reference()
@@ -96,7 +100,7 @@ class DatabaseService {
     // var newKey = globalRef.reference().push().key;
 
     StorageUploadTask uploadTask = _dbStorage
-        .child(driveRef.reference().toString())
+        .child(driveRef.reference().path)
         .child(newKey)
         .child(fileName)
         .putFile(file);
@@ -131,7 +135,11 @@ class DatabaseService {
     // String ifexist = globalRef.reference().child(folderId).path;
     // globalRef.reference().child(folderId).path;
 
+    // TODO at the end refer this
     await driveRef.reference().child(folderId).remove();
+    var storage =
+        _dbStorage.child(driveRef.reference().path).child(folderId).delete();
+
     // await globalRef.reference().child(folderId).remove();
 
     // String ifexist =
@@ -144,8 +152,39 @@ class DatabaseService {
     // }
 
     // StorageReference storageReference =
-    //     FirebaseStorage.instance.ref().child(folderPath).getParent();
-    // var deleteTask = storageReference.child(folderName).delete();
+    //     FirebaseStorage.instance.ref().child(driveRef.reference().path);
+    // var deleteTask = storageReference.child(folderId).delete();
+
+    // TODO solve in a update
+
+    // var deleteRef = driveRef.reference().child(folderId).reference();
+
+    // while (deleteRef.reference() != null) {
+    //   await deleteRef.once().then((DataSnapshot snapshot) async {
+    //     try {
+    //       var keys = snapshot.value.key;
+    //       var data = snapshot.value;
+
+    //       for (var key in keys) {
+    //         while (data[key]['documentType'] != 'documentType.file') {
+    //           deleteRef = deleteRef.child(data[key]['folderId']).reference();
+
+    //           deleteFolder(
+    //             driveRef: deleteRef,
+    //           );
+    //         }
+    //         await _dbStorage
+    //             .child(deleteRef.reference().path)
+    //             .child(data[key]['fileId'])
+    //             .child(data[key]['fileName'])
+    //             .delete();
+    //       }
+    //       await deleteRef.reference().child(folderId).remove();
+    //     } catch (e) {
+    //       print(e.toString());
+    //     }
+    //   });
+    // }
   }
 
   Future renameFile(
@@ -160,7 +199,7 @@ class DatabaseService {
       {String fileName, String fileId, DatabaseReference driveRef}) async {
     await driveRef.reference().child(fileId).remove();
     await _dbStorage
-        .child(driveRef.reference().toString())
+        .child(driveRef.reference().path)
         .child(fileId)
         .child(fileName)
         .delete();

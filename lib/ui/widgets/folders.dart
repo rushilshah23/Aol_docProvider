@@ -1,4 +1,5 @@
 import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -173,11 +174,18 @@ class _FolderCardState extends State<FolderCard> {
                         pid: widget.parentId,
                         uid: widget.userId,
                         folderId: widget.folderId,
-                        ref: widget.globalRef
-                            .reference()
-                            .child(widget.folderId)
-                            .reference(),
-                        // widget.globalRef.child(widget.folderId),
+                        ref:
+                            // widget.globalRef.reference().child(widget.folderId),
+                            // widget.globalRef
+                            //     .reference()
+                            //     .child(widget.folderId)
+                            //     .reference(),
+                            // widget.globalRef;
+                            // widget.globalRef.reference();
+                            // .reference(),
+                            // .reference(),
+                            widget.globalRef.reference().child(widget.folderId),
+                        // widget.globalRef.reference(),
 
                         // widget.globalRef.reference(),
 

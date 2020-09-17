@@ -21,8 +21,8 @@ class Wrapper extends StatelessWidget {
             .reference()
             .child('users')
             .child(user.uid)
-            .child('documentManager')
-            .reference(),
+            .child('documentManager'),
+        // .reference(),
 
         // .child('users')
         // .child(user.uid)

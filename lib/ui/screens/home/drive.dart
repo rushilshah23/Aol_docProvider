@@ -45,7 +45,11 @@ class _DrivePageState extends State<DrivePage> {
   var reference;
 
   void initState() {
-    driveRef = widget.ref.reference();
+    driveRef = widget.ref.reference().child(widget.folderId);
+    // driveRef = (widget.ref).reference();
+
+    // driveRef = widget.ref;
+
     print(driveRef.path);
     // .child(widget.folderId);
     reference = db.reference();
@@ -54,18 +58,19 @@ class _DrivePageState extends State<DrivePage> {
     // getFilesList();
     // getFoldersList();
     // });
-    getFoldersList();
-    getFilesList();
+    // getFoldersList();
+    // getFilesList();
 
     super.initState();
   }
 
   Future<List<FolderCard>> getFoldersList() async {
-    await driveRef.reference().once().then((snapshot) {
-      if (snapshot.value != 0) {
+    await driveRef.once().then((DataSnapshot snapshot) {
+      foldersCard.clear();
+      if (snapshot.value != null) {
         try {
           var data = snapshot.value;
-          var keys = snapshot.value.keys ?? 0;
+          var keys = snapshot.value.keys;
           foldersCard.clear();
 
           if (keys != 0) {
@@ -84,14 +89,14 @@ class _DrivePageState extends State<DrivePage> {
                   );
                   foldersCard.add(folderCard);
                 });
-                // }
               }
-
-              // else {
-              //   getFoldersList();
-              // }
             }
+
+            // else {
+            //   getFoldersList();
+            // }
           }
+          // }
         } catch (e) {
           debugPrint(e.toString());
         }
@@ -104,10 +109,12 @@ class _DrivePageState extends State<DrivePage> {
   Future<List<FileCard>> getFilesList() async {
     // var db = FirebaseDatabase.instance;
     // var ref = db.reference();
-    await driveRef.reference().once().then((snapshot) {
-      if (snapshot.value != 0) {
+
+    await driveRef.once().then((DataSnapshot snapshot) {
+      filesCard.clear();
+      if (snapshot.value != null) {
         var data = snapshot.value;
-        var keys = snapshot.value.keys ?? 0;
+        var keys = snapshot.value.keys;
         filesCard.clear();
         try {
           if (keys != 0) {
@@ -235,7 +242,8 @@ class _DrivePageState extends State<DrivePage> {
 
   Future<bool> gobackFolder() async {
     setState(() {
-      driveRef.reference().parent().reference();
+      // driveRef.reference().parent().reference();
+      driveRef.parent().reference();
     });
     return true;
   }
@@ -287,58 +295,79 @@ class _DrivePageState extends State<DrivePage> {
                       FloatingActionButtonLocation.endFloat,
                   body: WillPopScope(
                     onWillPop: gobackFolder,
-                    child: ListView(children: [
-                      // Text(
-                      //     "length of lsit = ${foldersCard.length + filesCard.length}"),
-                      foldersCard.length != 0 || filesCard.length != 0
-                          // && (foldersCard.length + filesCard.length) != null
-                          ? GridView.builder(
-                              physics: ScrollPhysics(),
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount:
-                                  (foldersCard.length + filesCard.length),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2),
-                              itemBuilder: (_, index) {
-                                // getFoldersList();
-                                // getFilesList();
-                                // if (index >= 0) {
-                                // if (index is int) {
-                                return index < foldersCard.length && index >= 0
-                                    ? foldersCard[index]
-                                    : filesCard[index - foldersCard.length];
+                    child: foldersCard.length != 0 || filesCard.length != 0
+                        ? ListView(children: [
+                            // Text(
+                            //     "length of lsit = ${foldersCard.length + filesCard.length}"),
+                            foldersCard.length != 0 || filesCard.length != 0
+                                ?
+                                // && (foldersCard.length + filesCard.length) != null
+                                GridView.builder(
+                                    physics: ScrollPhysics(),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: (foldersCard.length +
+                                            filesCard.length) ??
+                                        0,
+                                    // (foldersCard.length),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2),
+                                    itemBuilder: (_, index) {
+                                      // getFoldersList();
+                                      // getFilesList();
+                                      // if (index >= 0) {
+                                      // if (index is int) {
 
-                                // }
-                                // else
-                                //   return Center(
-                                //     child: Container(
-                                //       padding:
-                                //           EdgeInsets.fromLTRB(50, 300, 50, 200),
-                                //       child: Text(
-                                //         'No Items left',
-                                //         style: TextStyle(
-                                //             fontSize: 40,
-                                //             fontWeight: FontWeight.bold,
-                                //             color: appColor),
-                                //       ),
-                                //     ),
-                                //   );
-                              })
-                          : Center(
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
-                                child: Text(
-                                  'No Items',
-                                  style: TextStyle(
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.bold,
-                                      color: appColor),
-                                ),
+                                      return index < foldersCard.length
+                                          // &&  index >= 0
+                                          ? foldersCard[index]
+                                          : filesCard[
+                                              index - foldersCard.length];
+
+                                      // return foldersCard[index];
+                                      // }
+                                      // else
+                                      //   return Center(
+                                      //     child: Container(
+                                      //       padding:
+                                      //           EdgeInsets.fromLTRB(50, 300, 50, 200),
+                                      //       child: Text(
+                                      //         'No Items left',
+                                      //         style: TextStyle(
+                                      //             fontSize: 40,
+                                      //             fontWeight: FontWeight.bold,
+                                      //             color: appColor),
+                                      //       ),
+                                      //     ),
+                                      //   );
+                                    })
+                                : Center(
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.fromLTRB(50, 300, 50, 200),
+                                      child: Text(
+                                        'No Items',
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                            color: appColor),
+                                      ),
+                                    ),
+                                  )
+                          ])
+                        : Center(
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
+                              child: Text(
+                                'No Items',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: appColor),
                               ),
-                            )
-                    ]),
+                            ),
+                          ),
                   ))
               : Loading();
         });

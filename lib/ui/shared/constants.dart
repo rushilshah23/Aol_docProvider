@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 
-const Color appColor = Colors.amber;
+const Color appColor = Color(0xFF02DEED);
 
-const BoxDecoration colorBox = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [const Color(0xFFFF8F00), const Color(0xFFFFc107)],
-  ),
-);
+const BoxDecoration colorBox = BoxDecoration(color: Color(0xFF02DEED));
 
 bool isLoading = false;
 

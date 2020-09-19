@@ -46,7 +46,7 @@ class _SignUpState extends State<SignUp> {
                           Icons.people,
                           size: 128,
                           // color: Theme.of(context).primaryColor,
-                          color: Colors.amber[600],
+                          color: Color(0xFF02DEED),
                         ),
                       ),
                       SizedBox(
@@ -126,12 +126,12 @@ class _SignUpState extends State<SignUp> {
                               text: TextSpan(
                                   text: 'Already have an account?',
                                   style: TextStyle(
-                                      color: Colors.amber[800], fontSize: 18),
+                                      color: Color(0xFF02DEED), fontSize: 18),
                                   children: <TextSpan>[
                                     TextSpan(
                                         text: ' Sign In',
                                         style: TextStyle(
-                                            color: Colors.blueAccent,
+                                            color: Colors.blue,
                                             fontSize: 18),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () {

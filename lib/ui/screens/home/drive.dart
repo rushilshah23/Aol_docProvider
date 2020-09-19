@@ -35,11 +35,13 @@ class DrivePage extends StatefulWidget {
 
 class _DrivePageState extends State<DrivePage> {
   GlobalKey<FormState> _folderNameKey = new GlobalKey<FormState>();
-  TextEditingController _folderNameController = new TextEditingController();
+  TextEditingController _folderNameController =
+      new TextEditingController(text: 'Untitled Folder');
   List<FolderCard> foldersCard = [];
   List<FileCard> filesCard = [];
   String appPath, folderappBar;
   DatabaseReference driveRef;
+  final _focusNode = FocusNode();
 
   final FirebaseDatabase db = FirebaseDatabase.instance;
   var reference;
@@ -62,6 +64,12 @@ class _DrivePageState extends State<DrivePage> {
     // getFilesList();
 
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _folderNameController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _folderNameController.text.length);
+      }
+    });
   }
 
   Future<List<FolderCard>> getFoldersList() async {
@@ -146,16 +154,86 @@ class _DrivePageState extends State<DrivePage> {
     return filesCard;
   }
 
+  foldercreatedpopup(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text('Success!!'),
+            content: Text('Your Folder has been created successfully!'),
+            actions: [
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Color(0xFF02DEED)),
+                  ))
+            ],
+          );
+        });
+  }
+
+  fileuploadedpopup(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text('Success!!'),
+            content: Text('File Uploaded successfully!'),
+            actions: [
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(color: Color(0xFF02DEED)),
+                  ))
+            ],
+          );
+        });
+  }
+
   createFolderPopUp(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Enter folder name"),
+          backgroundColor: Colors.white,
+          title: Text("New Folder"),
           content: Form(
             key: _folderNameKey,
             child: TextFormField(
+                cursorColor: Color(0xFF02DEED),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter folder name',
+                  filled: true,
+                  fillColor: Colors.grey[300],
+                  labelStyle: TextStyle(
+                      color: _focusNode.hasFocus
+                          ? Colors.black
+                          : Color(0xFF02DEED),
+                      fontSize: 10.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF02DEED)),
+                  ),
+                ),
                 autofocus: true,
+                focusNode: _focusNode,
                 controller: _folderNameController,
                 validator: (String content) {
                   if (content.length != 0) {
@@ -182,16 +260,23 @@ class _DrivePageState extends State<DrivePage> {
                         folderName: _folderNameController.text,
                         parentId: widget.folderId,
                         driveRef: driveRef);
-                    _folderNameController.clear();
                     Navigator.pop(context);
+                    foldercreatedpopup(context);
+                    _folderNameController.clear();
                   }
                 },
-                child: Text("Ok")),
+                child: Text(
+                  "Create",
+                  style: TextStyle(color: Color(0xFF02DEED)),
+                )),
             FlatButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text("Cancel"))
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ))
           ],
         );
       },
@@ -215,7 +300,10 @@ class _DrivePageState extends State<DrivePage> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.create_new_folder),
+                    leading: Icon(
+                      Icons.create_new_folder,
+                      color: Colors.black,
+                    ),
                     title: Text("Create Folder"),
                     onTap: () {
                       Navigator.pop(context);
@@ -223,14 +311,22 @@ class _DrivePageState extends State<DrivePage> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.cloud_upload),
+                    leading: Icon(
+                      Icons.cloud_upload,
+                      color: Colors.black,
+                    ),
                     title: Text("Upload File"),
                     onTap: () {
-                      DatabaseService(userID: widget.uid).chooseFile(
+                      DatabaseService(userID: widget.uid)
+                          .chooseFile(
                         documentType: documentType.file,
                         parentId: widget.folderId,
                         driveRef: driveRef,
-                      );
+                      )
+                          .then((value) {
+                        Navigator.pop(context);
+                        fileuploadedpopup(context);
+                      });
                     },
                   )
                 ],
@@ -285,11 +381,14 @@ class _DrivePageState extends State<DrivePage> {
                       )),
                   drawer: homeDrawer(context),
                   floatingActionButton: FloatingActionButton(
-                    child: Icon(Icons.add),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
                     onPressed: () {
                       return driveOptions(context);
                     },
-                    backgroundColor: appColor,
+                    backgroundColor: Color(0xFF02DEED),
                   ),
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,

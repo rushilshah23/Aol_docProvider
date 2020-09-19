@@ -38,10 +38,17 @@ class FileCard extends StatefulWidget {
 class _FileCardState extends State<FileCard> {
   TextEditingController _renameFileController = new TextEditingController();
   GlobalKey<FormState> _renameFileKey = new GlobalKey<FormState>();
+  final _focusNode = FocusNode();
 
   void initState() {
     // _renameFileController.text = widget.fileName;
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _renameFileController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _renameFileController.text.length);
+      }
+    });
   }
 
   _launchURL(String fileurl) async {
@@ -54,15 +61,117 @@ class _FileCardState extends State<FileCard> {
     }
   }
 
+  filedownloadPopUp(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text("Download File?"),
+            content: Text('Are you sure you want to download this file?'),
+            actions: [
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () async {
+                    try {
+                      DatabaseService(userID: widget.userId).downloadFile(
+                          fileName: widget.fileName,
+                          fileDownloadLink: widget.fileDownloadLink);
+                    } catch (e) {
+                      final snackBar = SnackBar(
+                        content: Text('Download failed due to : {$e} error '),
+                        duration: Duration(seconds: 120),
+                      );
+                      Scaffold.of(context).showSnackBar(snackBar);
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Color(0xFF02DEED)),
+                  )),
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.black)))
+            ],
+          );
+        });
+  }
+
+  deletefilePopUp(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text("Delete File?"),
+            content: Text('Are you sure you want to delete this file?'),
+            actions: [
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () async {
+                    DatabaseService(
+                            userID: widget.userId, driveRef: widget.globalRef)
+                        .deleteFile(
+                          fileId: widget.fileId,
+                          fileName: widget.fileName,
+                          driveRef: widget.globalRef,
+                        )
+                        .then((value) => Navigator.pop(context));
+                  },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.red),
+                  )),
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.black)))
+            ],
+          );
+        });
+  }
+
   renameFilePopUp(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Enter folder name"),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Rename file",
+          ),
           content: Form(
             key: _renameFileKey,
             child: TextFormField(
+                cursorColor: Color(0xFF02DEED),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter new file name',
+                  filled: true,
+                  fillColor: Colors.grey[300],
+                  labelStyle: TextStyle(
+                      color: _focusNode.hasFocus
+                          ? Colors.black
+                          : Color(0xFF02DEED),
+                      fontSize: 10.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF02DEED)),
+                  ),
+                ),
+                focusNode: _focusNode,
                 autofocus: true,
                 controller: _renameFileController,
                 validator: (String content) {
@@ -83,27 +192,32 @@ class _FileCardState extends State<FileCard> {
           ),
           actions: [
             FlatButton(
-                onPressed: () async {
-                  if (_renameFileKey.currentState.validate()) {
-                    Navigator.pop(context);
-                    DatabaseService(
-                            userID: widget.userId, driveRef: widget.globalRef)
-                        .renameFile(
-                      newFileName: _renameFileController.text,
-                      fileId: widget.fileId,
-                      driveRef: widget.globalRef,
-                    );
-
-                    _renameFileController.clear();
-                  }
-                },
-                child: Text("Ok")),
+              color: Colors.white,
+              onPressed: () async {
+                if (_renameFileKey.currentState.validate()) {
+                  DatabaseService(
+                          userID: widget.userId, driveRef: widget.globalRef)
+                      .renameFile(
+                    newFileName: _renameFileController.text,
+                    fileId: widget.fileId,
+                    driveRef: widget.globalRef,
+                  );
+                  Navigator.pop(context);
+                  _renameFileController.clear();
+                }
+              },
+              child: Text("Rename", style: TextStyle(color: Color(0xFF02DEED))),
+            ),
             FlatButton(
+                color: Colors.white,
                 onPressed: () {
                   _renameFileController.clear();
                   Navigator.of(context).pop();
                 },
-                child: Text("Cancel"))
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ))
           ],
         );
       },
@@ -127,31 +241,33 @@ class _FileCardState extends State<FileCard> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.cloud_download),
+                    leading: Icon(
+                      Icons.cloud_download,
+                      color: Colors.black,
+                    ),
                     title: Text("Download File"),
                     onTap: () async {
-                      DatabaseService(userID: widget.userId).downloadFile(
-                          fileName: widget.fileName,
-                          fileDownloadLink: widget.fileDownloadLink);
+                      Navigator.pop(context);
+                      filedownloadPopUp(context);
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.delete),
+                    leading: Icon(
+                      Icons.delete,
+                      color: Colors.black,
+                    ),
                     title: Text("Delete File"),
                     onTap: () async {
-                      DatabaseService(
-                              userID: widget.userId, driveRef: widget.globalRef)
-                          .deleteFile(
-                        fileId: widget.fileId,
-                        fileName: widget.fileName,
-                        driveRef: widget.globalRef,
-                      );
-                      // delete file
                       Navigator.pop(context);
+                      deletefilePopUp(context);
+                      // delete file
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.label),
+                    leading: Icon(
+                      Icons.label,
+                      color: Colors.black,
+                    ),
                     title: Text("Rename File"),
                     onTap: () {
                       Navigator.pop(context);

@@ -1,5 +1,4 @@
 import 'package:Aol_docProvider/core/services/database.dart';
-import 'package:Aol_docProvider/core/services/pathnavigator.dart';
 
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -36,9 +35,55 @@ class FolderCard extends StatefulWidget {
 class _FolderCardState extends State<FolderCard> {
   TextEditingController _renameFolderController = new TextEditingController();
   GlobalKey<FormState> _renameFolderKey = new GlobalKey<FormState>();
+  final _focusNode = FocusNode();
 
   void initState() {
     super.initState();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _renameFolderController.selection = TextSelection(
+            baseOffset: 0, extentOffset: _renameFolderController.text.length);
+      }
+    });
+  }
+
+  deleteFolderPopUp(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text("Delete Folder?"),
+            content: Text('Are you sure you want to delete this folder?'),
+            actions: [
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () async {
+                    DatabaseService(
+
+                            // globalRef:
+                            //     widget.globalRef.child(widget.folderId),
+                            userID: widget.userId)
+                        .deleteFolder(
+                      folderId: widget.folderId,
+                      driveRef: widget.globalRef,
+                      // folderName: widget.folderName,
+                    );
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.red),
+                  )),
+              FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.black)))
+            ],
+          );
+        });
   }
 
   renameFolderPopUp(BuildContext context) {
@@ -46,10 +91,33 @@ class _FolderCardState extends State<FolderCard> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("New Foldername"),
+          backgroundColor: Colors.white,
+          title: Text("Rename Folder"),
           content: Form(
             key: _renameFolderKey,
             child: TextFormField(
+                cursorColor: Color(0xFF02DEED),
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey[300],
+                  labelStyle: TextStyle(
+                      color: _focusNode.hasFocus
+                          ? Colors.black
+                          : Color(0xFF02DEED),
+                      fontSize: 10.0),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF02DEED)),
+                  ),
+                ),
+                focusNode: _focusNode,
                 autofocus: true,
                 controller: _renameFolderController,
                 validator: (String content) {
@@ -70,6 +138,7 @@ class _FolderCardState extends State<FolderCard> {
           ),
           actions: [
             FlatButton(
+                color: Colors.white,
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
                     DatabaseService(
@@ -88,13 +157,19 @@ class _FolderCardState extends State<FolderCard> {
                     // Navigator.pop(context);
                   }
                 },
-                child: Text("Ok")),
+                child: Text(
+                  "Rename",
+                  style: TextStyle(color: Color(0xFF02DEED)),
+                )),
             FlatButton(
                 onPressed: () {
                   _renameFolderController.clear();
                   Navigator.of(context).pop();
                 },
-                child: Text("Cancel"))
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                ))
           ],
         );
       },
@@ -118,24 +193,15 @@ class _FolderCardState extends State<FolderCard> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Icon(Icons.delete),
+                    leading: Icon(Icons.delete, color: Colors.black),
                     title: Text("Delete Folder"),
                     onTap: () async {
-                      DatabaseService(
-
-                              // globalRef:
-                              //     widget.globalRef.child(widget.folderId),
-                              userID: widget.userId)
-                          .deleteFolder(
-                        folderId: widget.folderId,
-                        driveRef: widget.globalRef,
-                        // folderName: widget.folderName,
-                      );
                       Navigator.pop(context);
+                      deleteFolderPopUp(context);
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.label),
+                    leading: Icon(Icons.label, color: Colors.black),
                     title: Text("Rename Folder"),
                     onTap: () {
                       renameFolderPopUp(context);

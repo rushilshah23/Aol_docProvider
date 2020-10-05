@@ -1,36 +1,43 @@
+import 'package:Aol_docProvider/core/models/filemodel.dart';
+import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FileCard extends StatefulWidget {
-  final dynamic userId;
-  final dynamic parentId;
-  final dynamic fileId;
-  final dynamic fileName;
-  final DatabaseReference globalRef;
-  // final dynamic filePath;
-  // final dynamic realFilePath;
-  final dynamic documentType;
-  final dynamic fileDownloadLink;
-  // final dynamic fileSize;
-  final dynamic createdAt;
-  // final dynamic modifiedAt;
+  final FileModel fileModel;
+  // final dynamic userId;
+  // final dynamic parentId;
+  // final dynamic fileId;
+  // final dynamic fileName;
+  // final DatabaseReference globalRef;
+  // // final dynamic filePath;
+  // // final dynamic realFilePath;
+  // final dynamic documentType;
+  // final dynamic fileDownloadLink;
+  // // final dynamic fileSize;
+  // final dynamic createdAt;
+  // // final dynamic modifiedAt;
 
-  FileCard(
-      {this.userId,
-      this.parentId,
-      this.fileId,
-      this.fileName,
-      this.globalRef,
-      // this.filePath,
-      // this.realFilePath,
-      this.documentType,
-      this.fileDownloadLink,
-      this.createdAt});
+  FileCard({
+    this.fileModel,
+    // this.userId,
+    // this.parentId,
+    // this.fileId,
+    // this.fileName,
+    // this.globalRef,
+    // // this.filePath,
+    // // this.realFilePath,
+    // this.documentType,
+    // this.fileDownloadLink,
+    // this.createdAt
+  });
   @override
   _FileCardState createState() => _FileCardState();
 }
@@ -40,7 +47,22 @@ class _FileCardState extends State<FileCard> {
   GlobalKey<FormState> _renameFileKey = new GlobalKey<FormState>();
   final _focusNode = FocusNode();
 
+  var userModelVar;
+  FirebaseDatabase _folderDatabase = FirebaseDatabase.instance;
+  DatabaseReference _folderRef;
+  String _folderRefPath;
+
   void initState() {
+    _folderRef = _folderDatabase
+        .reference()
+        .child(widget.fileModel.globalRef)
+        .reference()
+        .child(widget.fileModel.fileId);
+
+    _folderRefPath = _folderRef.path;
+    // widget.folderModel.globalRef.reference().child(widget.folderModel.folderId)
+    userModelVar = Provider.of<UserModel>(context, listen: false);
+    super.initState();
     // _renameFileController.text = widget.fileName;
     super.initState();
     _focusNode.addListener(() {
@@ -74,9 +96,11 @@ class _FileCardState extends State<FileCard> {
                   color: Colors.white,
                   onPressed: () async {
                     try {
-                      DatabaseService(userID: widget.userId).downloadFile(
-                          fileName: widget.fileName,
-                          fileDownloadLink: widget.fileDownloadLink);
+                      DatabaseService(userID: widget.fileModel.userId)
+                          .downloadFile(
+                              fileName: widget.fileModel.fileName,
+                              fileDownloadLink:
+                                  widget.fileModel.fileDownloadLink);
                     } catch (e) {
                       final snackBar = SnackBar(
                         content: Text('Download failed due to : {$e} error '),
@@ -114,11 +138,14 @@ class _FileCardState extends State<FileCard> {
                   color: Colors.white,
                   onPressed: () async {
                     DatabaseService(
-                            userID: widget.userId, driveRef: widget.globalRef)
+                      userID: widget.fileModel.userId,
+                      // driveRef: widget.fileModel.globalRef
+                    )
                         .deleteFile(
-                          fileId: widget.fileId,
-                          fileName: widget.fileName,
-                          driveRef: widget.globalRef,
+                          fileId: widget.fileModel.fileId,
+                          fileName: widget.fileModel.fileName,
+                          driveRef: _folderRef,
+                          // widget.fileModel.globalRef,
                         )
                         .then((value) => Navigator.pop(context));
                   },
@@ -196,11 +223,14 @@ class _FileCardState extends State<FileCard> {
               onPressed: () async {
                 if (_renameFileKey.currentState.validate()) {
                   DatabaseService(
-                          userID: widget.userId, driveRef: widget.globalRef)
-                      .renameFile(
+                    userID: widget.fileModel.userId,
+                    driveRef: _folderRef,
+                    // widget.fileModel.globalRef
+                  ).renameFile(
                     newFileName: _renameFileController.text,
-                    fileId: widget.fileId,
-                    driveRef: widget.globalRef,
+                    fileId: widget.fileModel.fileId,
+                    driveRef: _folderRef,
+                    // widget.fileModel.globalRef,
                   );
                   Navigator.pop(context);
                   _renameFileController.clear();
@@ -230,7 +260,7 @@ class _FileCardState extends State<FileCard> {
         builder: (context) {
           return Container(
             color: Color(0xFF737373),
-            height: 180,
+            height: 230,
             child: Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).canvasColor,
@@ -273,7 +303,15 @@ class _FileCardState extends State<FileCard> {
                       Navigator.pop(context);
                       renameFilePopUp(context);
                     },
-                  )
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.share, color: Colors.black),
+                    title: Text("Share with Manager"),
+                    onTap: () async {
+                      // shareWithPopUp(),
+                      Navigator.pop(context);
+                    },
+                  ),
                 ],
               ),
             ),
@@ -299,7 +337,7 @@ class _FileCardState extends State<FileCard> {
                   size: 60,
                 ),
                 onPressed: () async {
-                  await _launchURL(widget.fileDownloadLink);
+                  await _launchURL(widget.fileModel.fileDownloadLink);
                 },
               ),
               // SizedBox(
@@ -318,7 +356,7 @@ class _FileCardState extends State<FileCard> {
                       Container(
                         width: 120,
                         child: AutoSizeText(
-                          "${widget.fileName}",
+                          "${widget.fileModel.fileName}",
                           maxLines: 2,
                           minFontSize: 28,
                           maxFontSize: 28,

@@ -1,5 +1,7 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/authenticationService.dart';
+
+import 'package:Aol_docProvider/ui/screens/home/shared.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/loading.dart';
 import 'package:flutter/material.dart';
@@ -47,13 +49,27 @@ Widget homeDrawer(BuildContext context) {
                   Navigator.pop(context);
                 },
               ),
-              // ListTile(
-              //   title: Text('Item 2'),
-              //   onTap: () {
-
-              //     Navigator.pop(context);
-              //   },
-              // ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Icon(Icons.folder_shared),
+                    SizedBox(
+                      width: 50,
+                    ),
+                    Text('Shared with Me'),
+                  ],
+                ),
+                onTap: () async {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SharedPage();
+                  }));
+                  // SharedPage();
+                  // isLoading = true;
+                  // _auth.signoutEmailId();
+                  // isLoading = false;
+                  // Navigator.pop(context);
+                },
+              ),
             ],
           ),
         );

@@ -1,9 +1,11 @@
+import 'package:Aol_docProvider/core/models/filemodel.dart';
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
-import 'package:Aol_docProvider/ui/widgets/file.dart';
-import 'package:Aol_docProvider/ui/widgets/folders.dart';
+import 'package:Aol_docProvider/core/viewmodels/file.dart';
+import 'package:Aol_docProvider/core/viewmodels/folders.dart';
 import 'package:Aol_docProvider/ui/widgets/loading.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,7 +16,7 @@ class DrivePage extends StatefulWidget {
   final String uid;
   final String pid;
   final String folderId;
-  final DatabaseReference ref;
+  final dynamic ref;
 
   // final String folderPath;
   // final String realFolderPath;
@@ -44,17 +46,20 @@ class _DrivePageState extends State<DrivePage> {
   final _focusNode = FocusNode();
 
   final FirebaseDatabase db = FirebaseDatabase.instance;
-  var reference;
+  // var reference;
 
   void initState() {
-    driveRef = widget.ref.reference().child(widget.folderId);
+    driveRef =
+        db.reference().child(widget.ref).reference().child(widget.folderId);
+
+    // driveRef = widget.ref.reference().child(widget.folderId);
     // driveRef = (widget.ref).reference();
 
     // driveRef = widget.ref;
 
     print(driveRef.path);
     // .child(widget.folderId);
-    reference = db.reference();
+    // reference = db.reference();
     // databaseReference = databaseReference.child(widget.folderId).reference();
     // setState(() {
     // getFilesList();
@@ -70,6 +75,7 @@ class _DrivePageState extends State<DrivePage> {
             baseOffset: 0, extentOffset: _folderNameController.text.length);
       }
     });
+    print("passed init");
   }
 
   Future<List<FolderCard>> getFoldersList() async {
@@ -86,8 +92,8 @@ class _DrivePageState extends State<DrivePage> {
               if ((data[key]['documentType']) == 'documentType.folder') {
                 // if (data[key]['parentId'] == widget.folderId) {
                 setState(() {
-                  FolderCard folderCard = new FolderCard(
-                    globalRef: driveRef,
+                  FolderModel folderCard = new FolderModel(
+                    globalRef: driveRef.path,
                     userId: data[key]['userId'] ?? '',
                     parentId: data[key]['parentId'] ?? '',
                     folderId: data[key]['folderId'] ?? '',
@@ -95,16 +101,16 @@ class _DrivePageState extends State<DrivePage> {
                     createdAt: data[key]['createdAt'] ?? '',
                     documentType: data[key]['documentType'] ?? '',
                   );
-                  foldersCard.add(folderCard);
+                  foldersCard.add(FolderCard(folderModel: folderCard));
                 });
               }
-            }
 
-            // else {
-            //   getFoldersList();
+              // else {
+              //   getFoldersList();
+              // }
+            }
             // }
           }
-          // }
         } catch (e) {
           debugPrint(e.toString());
         }
@@ -130,8 +136,8 @@ class _DrivePageState extends State<DrivePage> {
               if ((data[key]['documentType']) == 'documentType.file') {
                 // if (data[key]['parentId'] == widget.folderId) {
                 setState(() {
-                  FileCard fileCard = new FileCard(
-                    globalRef: driveRef,
+                  FileModel fileCard = new FileModel(
+                    globalRef: driveRef.path,
                     userId: data[key]['userId'] ?? '',
                     parentId: data[key]['parentId'] ?? '',
                     fileId: data[key]['fileId'] ?? '',
@@ -140,7 +146,9 @@ class _DrivePageState extends State<DrivePage> {
                     documentType: data[key]['documentType'] ?? '',
                     fileDownloadLink: data[key]['fileDownloadLink'] ?? '',
                   );
-                  filesCard.add(fileCard);
+                  filesCard.add(FileCard(
+                    fileModel: fileCard,
+                  ));
                 });
                 // }
               }
@@ -256,10 +264,12 @@ class _DrivePageState extends State<DrivePage> {
                 onPressed: () async {
                   if (_folderNameKey.currentState.validate()) {
                     await DatabaseService(userID: widget.uid).createFolder(
-                        documentType: documentType.folder,
-                        folderName: _folderNameController.text,
-                        parentId: widget.folderId,
-                        driveRef: driveRef);
+                      documentType: documentType.folder,
+                      folderName: _folderNameController.text,
+                      parentId: widget.folderId,
+                      driveRef: driveRef,
+                      // driveRef: TODO
+                    );
                     Navigator.pop(context);
                     foldercreatedpopup(context);
                     _folderNameController.clear();
@@ -388,7 +398,7 @@ class _DrivePageState extends State<DrivePage> {
                     onPressed: () {
                       return driveOptions(context);
                     },
-                    backgroundColor: Color(0xFF02DEED),
+                    backgroundColor: appColor,
                   ),
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,

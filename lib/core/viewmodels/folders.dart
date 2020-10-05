@@ -1,43 +1,64 @@
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
+import 'package:Aol_docProvider/ui/widgets/popUps.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class FolderCard extends StatefulWidget {
-  final dynamic userId;
-  final dynamic parentId;
-  final dynamic folderId;
-  final dynamic documentType;
-  final DatabaseReference globalRef;
-  // final dynamic realFolderPath;
-  // final dynamic folderPath;
-  final dynamic folderName;
-  final dynamic createdAt;
-
-  FolderCard(
-      {@required this.userId,
-      @required this.parentId,
-      @required this.folderId,
-      @required this.documentType,
-      @required this.globalRef,
-      // @required this.realFolderPath,
-      // @required this.folderPath,
-      @required this.folderName,
-      @required this.createdAt});
+  // final dynamic userId;
+  // final dynamic parentId;
+  // final dynamic folderId;
+  // final dynamic documentType;
+  // final DatabaseReference globalRef;
+  // // final dynamic realFolderPath;
+  // // final dynamic folderPath;
+  // final dynamic folderName;
+  // final dynamic createdAt;
+  final FolderModel folderModel;
+  FolderCard({@required this.folderModel
+      //   @required this.userId,
+      // @required this.parentId,
+      // @required this.folderId,
+      // @required this.documentType,
+      // @required this.globalRef,
+      // // @required this.realFolderPath,
+      // // @required this.folderPath,
+      // @required this.folderName,
+      // @required this.createdAt
+      });
   @override
   _FolderCardState createState() => _FolderCardState();
 }
 
 class _FolderCardState extends State<FolderCard> {
   TextEditingController _renameFolderController = new TextEditingController();
+
   GlobalKey<FormState> _renameFolderKey = new GlobalKey<FormState>();
+  var userModelVar;
+  FirebaseDatabase _folderDatabase = FirebaseDatabase.instance;
+  DatabaseReference _folderRef;
+  String _folderRefPath;
+
   final _focusNode = FocusNode();
 
   void initState() {
+    _folderRef = _folderDatabase
+        .reference()
+        .child(widget.folderModel.globalRef)
+        .reference()
+        .child(widget.folderModel.folderId);
+
+    _folderRefPath = _folderRef.path;
+    // widget.folderModel.globalRef.reference().child(widget.folderModel.folderId)
+    userModelVar = Provider.of<UserModel>(context, listen: false);
     super.initState();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -63,10 +84,12 @@ class _FolderCardState extends State<FolderCard> {
 
                             // globalRef:
                             //     widget.globalRef.child(widget.folderId),
-                            userID: widget.userId)
+                            userID: widget.folderModel.userId)
                         .deleteFolder(
-                      folderId: widget.folderId,
-                      driveRef: widget.globalRef,
+                      folderId: widget.folderModel.folderId,
+                      driveRef: _folderRef,
+                      //  widget.folderModel.globalRef,
+
                       // folderName: widget.folderName,
                     );
                     Navigator.pop(context);
@@ -146,11 +169,11 @@ class _FolderCardState extends State<FolderCard> {
                             // globalRef: widget.globalRef
                             //     .child(widget.folderId)
                             //     .reference(),
-                            userID: widget.userId)
+                            userID: widget.folderModel.userId)
                         .renameFolder(
-                            folderId: widget.folderId,
+                            folderId: widget.folderModel.folderId,
                             newFolderName: _renameFolderController.text,
-                            driveRef: widget.globalRef);
+                            driveRef: _folderRef);
                     _renameFolderController.clear();
                     Navigator.pop(context);
                     // DatabaseService(userID: widget.userId).renameFolder();
@@ -177,12 +200,13 @@ class _FolderCardState extends State<FolderCard> {
   }
 
   void folderOptions(BuildContext context) {
+    // var userModelVar = Provider.of<UserModel>(context);
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Container(
             color: Color(0xFF737373),
-            height: 150,
+            height: 180,
             child: Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).canvasColor,
@@ -207,7 +231,26 @@ class _FolderCardState extends State<FolderCard> {
                       renameFolderPopUp(context);
                       // Navigator.pop(context);
                     },
-                  )
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.share, color: Colors.black),
+                    title: Text("Share with Manager"),
+                    onTap: () {
+                      shareWithPopUp(
+                        context,
+                        documentType: documentType.folder,
+                        folderModel: widget.folderModel,
+                        // docId: widget.folderModel.folderId,
+                        // yourRef: widget.folderModel.globalRef,
+                        focusNode: _focusNode,
+                        // docName: widget.folderModel.folderName,
+                        // userId: widget.folderModel.userId,
+                        // senderEmailId: userModelVar.userEmail,
+                        // documentType: documentType.folder,
+                      );
+                      // Navigator.pop(context);
+                    },
+                  ),
                 ],
               ),
             ),
@@ -237,27 +280,31 @@ class _FolderCardState extends State<FolderCard> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return DrivePage(
-                        pid: widget.parentId,
-                        uid: widget.userId,
-                        folderId: widget.folderId,
-                        ref:
-                            // widget.globalRef.reference().child(widget.folderId),
-                            // widget.globalRef
-                            //     .reference()
-                            //     .child(widget.folderId)
-                            //     .reference(),
-                            // widget.globalRef;
-                            // widget.globalRef.reference();
-                            // .reference(),
-                            // .reference(),
-                            widget.globalRef.reference().child(widget.folderId),
+                        pid: widget.folderModel.parentId,
+                        uid: widget.folderModel.userId,
+                        folderId: widget.folderModel.folderId,
+                        ref: _folderRefPath,
+                        // widget.globalRef.reference().child(widget.folderId),
+                        // widget.globalRef
+                        //     .reference()
+                        //     .child(widget.folderId)
+                        //     .reference(),
+                        // widget.globalRef;
+                        // widget.globalRef.reference();
+                        // .reference(),
+                        // .reference(),
+
+                        // widget.folderModel.globalRef
+                        //     .reference()
+                        //     .child(widget.folderModel.folderId),
+
                         // widget.globalRef.reference(),
 
                         // widget.globalRef.reference(),
 
                         // folderPath: widget.folderPath,
                         // realFolderPath: widget.realFolderPath,
-                        folderName: widget.folderName,
+                        folderName: widget.folderModel.folderName,
                       );
                     }));
                     // folder pressed
@@ -275,7 +322,7 @@ class _FolderCardState extends State<FolderCard> {
                         Container(
                           width: 120,
                           child: AutoSizeText(
-                            "${widget.folderName}",
+                            "${widget.folderModel.folderName}",
                             maxLines: 2,
                             minFontSize: 28,
                             maxFontSize: 28,

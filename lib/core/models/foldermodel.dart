@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class FolderModel {
@@ -6,7 +5,7 @@ class FolderModel {
   final dynamic parentId;
   final dynamic folderId;
   final dynamic documentType;
-  final DatabaseReference globalRef;
+  final dynamic globalRef;
   // final dynamic realFolderPath;
   // final dynamic folderPath;
   final dynamic folderName;

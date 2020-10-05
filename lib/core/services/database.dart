@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:Aol_docProvider/core/models/filemodel.dart';
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/services/pathnavigator.dart';
-import 'package:Aol_docProvider/ui/Widgets/folders.dart';
+
 import 'package:Aol_docProvider/ui/shared/constants.dart';
-import 'package:Aol_docProvider/ui/widgets/file.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:firebase_database/firebase_database.dart";
@@ -19,7 +21,7 @@ class DatabaseService {
   // final String folderId;
 
   DatabaseService({
-    @required this.userID,
+    this.userID,
     this.driveRef,
     // this.userEmail,
     // @required this.folderId,
@@ -29,8 +31,8 @@ class DatabaseService {
 
   StorageReference _dbStorage = FirebaseStorage.instance.ref();
 
-  List<FileCard> filesCard = [];
-  List<FolderCard> foldersCard = [];
+  List<FileModel> filesCard = [];
+  List<FolderModel> foldersCard = [];
 
   Future updateUserData({String folderName}) async {
     DatabaseReference _createUserDrive = _db.reference();
@@ -50,6 +52,8 @@ class DatabaseService {
       'folderName': folderName,
       'userId': userID,
     });
+
+    // shareRef.reference().child('users').child(userID).child('shared');
 
     // await databaseReference
     //     // .reference()
@@ -82,6 +86,7 @@ class DatabaseService {
       'documentType': documentType.toString(),
       'folderName': folderName,
       'createdAt': Timestamp.now().toDate().toIso8601String(),
+      'globalRef': driveRef.reference().path,
     });
   }
 
@@ -102,7 +107,7 @@ class DatabaseService {
     StorageUploadTask uploadTask = _dbStorage
         .child(driveRef.reference().path)
         .child(newKey)
-        .child(fileName)
+        .child(newKey)
         .putFile(file);
     String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
@@ -122,7 +127,8 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    await driveRef.reference().child(folderId).update({
+    // await driveRef.reference().child(folderId).update({
+    await driveRef.reference().update({
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -136,9 +142,12 @@ class DatabaseService {
     // globalRef.reference().child(folderId).path;
 
     // TODO at the end refer this
-    await driveRef.reference().child(folderId).remove();
+    // await driveRef.reference().child(folderId).remove();
+    await driveRef.reference().remove();
+
     var storage =
-        _dbStorage.child(driveRef.reference().path).child(folderId).delete();
+        // _dbStorage.child(driveRef.reference().path).child(folderId).delete();
+        _dbStorage.child(driveRef.reference().path).delete();
 
     // await globalRef.reference().child(folderId).remove();
 
@@ -189,7 +198,8 @@ class DatabaseService {
 
   Future renameFile(
       {String newFileName, String fileId, DatabaseReference driveRef}) async {
-    await driveRef.reference().child(fileId).update({
+    // await driveRef.reference().child(fileId).update({
+    await driveRef.reference().update({
       'fileName': newFileName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -197,12 +207,17 @@ class DatabaseService {
 
   Future deleteFile(
       {String fileName, String fileId, DatabaseReference driveRef}) async {
-    await driveRef.reference().child(fileId).remove();
-    await _dbStorage
-        .child(driveRef.reference().path)
-        .child(fileId)
-        .child(fileName)
-        .delete();
+    // await driveRef.reference().child(fileId).remove();
+    await driveRef.reference().remove();
+    print("delete path ${driveRef.path}");
+
+    // await _dbStorage
+    //     .child(driveRef.reference().path)
+    //     .child(fileId)
+    //     .child(fileName)
+    //     .delete();
+
+    await _dbStorage.child(driveRef.reference().path).child(fileName).delete();
 
     // StorageReference storageReference =
     //     FirebaseStorage.instance.ref().child(filePath).getParent();
@@ -298,4 +313,260 @@ class DatabaseService {
   //     return _getFoldersFromSnapshot(snapshot);
   //   }).asStream();
   // }
+
+  Future<String> getuserIdfromEmailId({String emailId}) async {
+    String receiverId;
+    try {
+      var getuserId = await _db
+          .reference()
+          .child('users')
+          .reference()
+          .once()
+          .then((snapshot) {
+        if (snapshot.value != null) {
+          var data = snapshot.value;
+          var keys = snapshot.value.keys;
+          // if (data != null) {
+          for (var key in keys) {
+            if (data[key]['documentManager'] != null) {
+              print(
+                  "Searched email id ${data[key]['documentManager']['folderName']}");
+              if (data[key]['documentManager']['folderName'] == emailId) {
+                print(
+                    "searching userid is ${data[key]['documentManager']['userId']}");
+                receiverId = data[key]['documentManager']['userId'];
+              }
+            } else
+              return null;
+            // return Scaffold.of(context).showSnackBar(
+            //     SnackBar(content: Text("Email id: $emailId doesn't exists")));
+          }
+        }
+
+        // }
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return receiverId ?? null;
+  }
+
+  Future<String> getEmailIdfromUserId({String userId}) async {
+    String receiverEmailId;
+    try {
+      var getEmailId = await _db
+          .reference()
+          .child('users')
+          .reference()
+          .once()
+          .then((snapshot) {
+        if (snapshot.value != null) {
+          var data = snapshot.value;
+          var keys = snapshot.value.keys;
+          // if (data != null) {
+          for (var key in keys) {
+            if (data[key]['documentManager'] != null) {
+              // print(
+              //     "Searched email id ${data[key]['documentManager']['folderName']}");
+              if (data[key]['documentManager']['userId'] == userId) {
+                // print(
+                //     "searching userid is ${data[key]['documentManager']['userId']}");
+                receiverEmailId = data[key]['documentManager']['folderName'];
+              }
+            } else
+              return null;
+            // return Scaffold.of(context).showSnackBar(
+            //     SnackBar(content: Text("Email id: $emailId doesn't exists")));
+          }
+        }
+
+        // }
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return receiverEmailId ?? null;
+  }
+
+  shareWith({
+    @required String receiverEmailId,
+    FolderModel folderModel,
+    FileModel fileModel,
+    @required documentType docType,
+    // String senderEmailId,
+    // String docId,
+    // DatabaseReference sharePath,
+    // String docName,
+    // documentType documentType
+  }) async {
+    FirebaseDatabase _fbdb = FirebaseDatabase.instance;
+    DatabaseReference _db = _fbdb.reference();
+    var receiverId = await getuserIdfromEmailId(emailId: receiverEmailId);
+
+    if (receiverId != null) {
+      print('before push');
+      var shareId = _db
+          .reference()
+          .child('shared')
+          .child('users')
+          .child(userID)
+          .child('send')
+          .child(receiverId)
+          // .reference()
+          .push()
+          .key;
+      print('after push');
+
+      if (docType == documentType.folder) {
+        await _db
+            .reference()
+            .child('shared')
+            .child('users')
+            .child(userID)
+            .child('send')
+            .child(receiverId)
+            .child(shareId)
+            .reference()
+            // .reference()
+            // .child(receiverId)
+            .set({
+          'receiverEmailId': receiverEmailId,
+          'folderSenderId': folderModel.userId ?? null,
+          'folderId': folderModel.folderId ?? null,
+          'folderParentId': folderModel.parentId ?? null,
+          'folderDocumentType': folderModel.documentType ?? null,
+          'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+          'folderName': folderModel.folderName ?? null,
+          'folderCreatedAt': folderModel.createdAt ?? null,
+        });
+        print('surpassed');
+
+        await _db
+            .reference()
+            .child('shared')
+            .child('users')
+            .child(receiverId)
+            .child('received')
+            .child(userID)
+            .child(shareId)
+            .reference()
+            // // .reference()
+            // .child(receiverId)
+            .set({
+          'receiverEmailId': receiverEmailId,
+          'folderSenderId': folderModel.userId ?? null,
+          'folderId': folderModel.folderId ?? null,
+          'folderParentId': folderModel.parentId ?? null,
+          'folderDocumentType': folderModel.documentType ?? null,
+          'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+          'folderName': folderModel.folderName ?? null,
+          'folderCreatedAt': folderModel.createdAt ?? null,
+        });
+      }
+
+      if (docType == documentType.file) {
+        await _db
+            .reference()
+            .child('shared')
+            .child('users')
+            .child(userID)
+            .child('send')
+            .child(receiverId)
+            .child(shareId)
+            .reference()
+            // .reference()
+            // .child(receiverId)
+            .set({
+          'receiverEmailId': receiverEmailId,
+          'fileSenderId': fileModel.userId ?? null,
+          'fileParentId': fileModel.parentId ?? null,
+          'fileId': fileModel.fileId ?? null,
+          'fileName': fileModel.fileName ?? null,
+          'fileGlobalRef': fileModel.globalRef ?? null,
+          'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+          'fileCreatedAt': fileModel.createdAt ?? null,
+        });
+
+        await _db
+            .reference()
+            .child('shared')
+            .child('users')
+            .child(receiverId)
+            .child('received')
+            .child(userID)
+            .child(shareId)
+            .reference()
+            // // .reference()
+            // .child(receiverId)
+            .set({
+          'receiverEmailId': receiverEmailId,
+          'fileSenderId': fileModel.userId ?? null,
+          'fileParentId': fileModel.parentId ?? null,
+          'fileId': fileModel.fileId ?? null,
+          'fileName': fileModel.fileName ?? null,
+          'fileGlobalRef': fileModel.globalRef ?? null,
+          'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+          'fileCreatedAt': fileModel.createdAt ?? null,
+        });
+      }
+
+      // await shareRef
+      //     .reference()
+      //     .child('shared')
+      //     .child('users')
+      //     .child(userID)
+      //     .child('send')
+      //     .child(receiverId)
+      //     // .reference()
+      //     // .reference()
+      //     // .child(receiverId)
+      //     .set({
+      //   'receiverEmailId': receiverEmailId,
+      //   'folderSenderId': folderModel.userId ?? null,
+      //   'folderId': folderModel.folderId ?? null,
+      //   'folderParentId': folderModel.parentId ?? null,
+      //   'folderDocumentType': folderModel.documentType ?? null,
+      //   'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+      //   'folderName': folderModel.folderName ?? null,
+      //   'folderCreatedAt': folderModel.createdAt ?? null,
+      //   'fileSenderId': fileModel.userId ?? null,
+      //   'fileParentId': fileModel.parentId ?? null,
+      //   'fileId': fileModel.fileId ?? null,
+      //   'fileName': fileModel.fileName ?? null,
+      //   'fileGlobalRef': fileModel.globalRef ?? null,
+      //   'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+      //   'fileCreatedAt': fileModel.createdAt ?? null,
+      // });
+
+      // await shareRef
+      //     .reference()
+      //     .child('shared')
+      //     .child('users')
+      //     .child(receiverId)
+      //     .child('received')
+      //     .child(userID)
+      //     // .reference()
+      //     // // .reference()
+      //     // .child(receiverId)
+      //     .set({
+      //   'receiverEmailId': receiverEmailId,
+      //   'folderSenderId': folderModel.userId ?? null,
+      //   'folderId': folderModel.folderId ?? null,
+      //   'folderParentId': folderModel.parentId ?? null,
+      //   'folderDocumentType': folderModel.documentType ?? null,
+      //   'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+      //   'folderName': folderModel.folderName ?? null,
+      //   'folderCreatedAt': folderModel.createdAt ?? null,
+      //   'fileSenderId': fileModel.userId ?? null,
+      //   'fileParentId': fileModel.parentId ?? null,
+      //   'fileId': fileModel.fileId ?? null,
+      //   'fileName': fileModel.fileName ?? null,
+      //   'fileGlobalRef': fileModel.globalRef ?? null,
+      //   'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+      //   'fileCreatedAt': fileModel.createdAt ?? null,
+      // });
+      print("finsihed");
+    } else
+      debugPrint('receievr id not found');
+  }
 }

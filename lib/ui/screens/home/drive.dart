@@ -93,7 +93,7 @@ class _DrivePageState extends State<DrivePage> {
                 // if (data[key]['parentId'] == widget.folderId) {
                 setState(() {
                   FolderModel folderCard = new FolderModel(
-                    globalRef: driveRef.path,
+                    globalRef: data[key]['globalRef'] ?? '',
                     userId: data[key]['userId'] ?? '',
                     parentId: data[key]['parentId'] ?? '',
                     folderId: data[key]['folderId'] ?? '',
@@ -137,7 +137,8 @@ class _DrivePageState extends State<DrivePage> {
                 // if (data[key]['parentId'] == widget.folderId) {
                 setState(() {
                   FileModel fileCard = new FileModel(
-                    globalRef: driveRef.path,
+                    globalRef: data[key]['globalRef'] ?? '',
+                    // globalRef: driveRef.path,
                     userId: data[key]['userId'] ?? '',
                     parentId: data[key]['parentId'] ?? '',
                     fileId: data[key]['fileId'] ?? '',

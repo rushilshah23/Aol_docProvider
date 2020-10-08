@@ -1,6 +1,8 @@
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/ui/shared/constants.dart';
+import 'package:Aol_docProvider/ui/widgets/popUps.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -308,8 +310,13 @@ class _FileCardState extends State<FileCard> {
                     leading: Icon(Icons.share, color: Colors.black),
                     title: Text("Share with Manager"),
                     onTap: () async {
-                      // shareWithPopUp(),
-                      Navigator.pop(context);
+                      shareWithPopUp(
+                        context,
+                        documentType: documentType.file,
+                        fileModel: widget.fileModel,
+                        focusNode: _focusNode,
+                      );
+                      // Navigator.pop(context);
                     },
                   ),
                 ],

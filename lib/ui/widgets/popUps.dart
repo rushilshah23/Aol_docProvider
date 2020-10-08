@@ -1,9 +1,11 @@
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
+import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:Aol_docProvider/core/services/validators.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 shareWithPopUp(
   BuildContext context, {
@@ -23,6 +25,7 @@ shareWithPopUp(
   return showDialog(
     context: context,
     builder: (context) {
+      UserModel _userModel = Provider.of<UserModel>(context);
       return AlertDialog(
         backgroundColor: Colors.white,
         title: Text("Enter emailId of the person to Share with"),
@@ -62,14 +65,20 @@ shareWithPopUp(
               onPressed: () async {
                 if (_sharerKeyName.currentState.validate()) {
                   await DatabaseService(
-                          // userID: folderModel.userId,
-                          userID: folderModel.userId,
-                          driveRef: folderModel.globalRef)
-                      .shareWith(
+                    // userID: folderModel.userId,
+
+                    // userID: folderModel.userId ?? fileModel.userId,
+                    // userID: fileModel.userId,
+
+                    userID: _userModel.uid,
+
+                    // driveRef: folderModel.globalRef
+                  ).shareWith(
                     docType: documentType,
                     receiverEmailId: _sharerControllerName.text,
                     folderModel: folderModel ?? null,
                     fileModel: fileModel ?? null,
+
                     // docId: docId,
                     // sharePath: yourRef,
                     // docName: docName,

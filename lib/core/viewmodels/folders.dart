@@ -13,27 +13,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class FolderCard extends StatefulWidget {
-  // final dynamic userId;
-  // final dynamic parentId;
-  // final dynamic folderId;
-  // final dynamic documentType;
-  // final DatabaseReference globalRef;
-  // // final dynamic realFolderPath;
-  // // final dynamic folderPath;
-  // final dynamic folderName;
-  // final dynamic createdAt;
   final FolderModel folderModel;
-  FolderCard({@required this.folderModel
-      //   @required this.userId,
-      // @required this.parentId,
-      // @required this.folderId,
-      // @required this.documentType,
-      // @required this.globalRef,
-      // // @required this.realFolderPath,
-      // // @required this.folderPath,
-      // @required this.folderName,
-      // @required this.createdAt
-      });
+  FolderCard({@required this.folderModel});
   @override
   _FolderCardState createState() => _FolderCardState();
 }

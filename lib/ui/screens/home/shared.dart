@@ -73,9 +73,8 @@ class _SharedPageState extends State<SharedPage> {
               folderModelList.clear();
               fileModelList.clear();
               for (var key2 in keys) {
-                if (data[key2]['folderSenderId'] == key) {
-                  if (data[key2]['folderDocumentType'] ==
-                      'documentType.folder') {
+                if (data[key2]['documentSenderId'] == key) {
+                  if (data[key2]['documentType'] == 'documentType.folder') {
                     setState(() {
                       FolderModel folderModel = new FolderModel(
                           userId: data[key2]['folderSenderId'],
@@ -87,7 +86,7 @@ class _SharedPageState extends State<SharedPage> {
                           createdAt: data[key2]['folderCreatedAt']);
                       folderModelList.add(FolderCard(folderModel: folderModel));
                     });
-                  } else if (data[key2]['fileDocumentType'] ==
+                  } else if (data[key2]['documentType'] ==
                       'documentType.file') {
                     setState(() {
                       FileModel fileModel = new FileModel(

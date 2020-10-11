@@ -86,6 +86,7 @@ shareWithPopUp(
                     // senderEmailId: senderEmailId,
                     // documentType: documentType
                   );
+                  Navigator.pop(context);
                 }
               },
               child: Text(

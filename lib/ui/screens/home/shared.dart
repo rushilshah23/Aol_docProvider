@@ -20,7 +20,7 @@ class SharedPage extends StatefulWidget {
 
 class _SharedPageState extends State<SharedPage> {
   DatabaseReference _shareRef;
-  FirebaseDatabase _fbdb;
+  final FirebaseDatabase _fbdb = FirebaseDatabase.instance;
   List<ReceivedModel> receivedModelCards = [];
   List<FolderCard> folderModelList = [];
   List<FileCard> fileModelList = [];
@@ -29,7 +29,7 @@ class _SharedPageState extends State<SharedPage> {
   UserModel userModelVar;
   void initState() {
     userModelVar = Provider.of<UserModel>(context, listen: false);
-    _fbdb = FirebaseDatabase.instance;
+
     _shareRef = _fbdb.reference();
     //     .child('users')
     //     .child(userModelVar.uid)
@@ -53,12 +53,15 @@ class _SharedPageState extends State<SharedPage> {
         .reference()
         .once()
         .then((snapshot) async {
-      receivedModelListTileCards.clear();
+      // folderModelList.clear();
+      // fileModelList.clear();
       if (snapshot.value != null) {
         try {
           var keys = snapshot.value.keys;
           var data = snapshot.value;
           // receivedModelListTileCards.clear();
+          // folderModelList.clear();
+          // fileModelList.clear();
           for (var key in keys) {
             var receivedUserEmailid =
                 await DatabaseService().getEmailIdfromUserId(userId: key);
@@ -74,6 +77,7 @@ class _SharedPageState extends State<SharedPage> {
               if (snapshot.value != null) {
                 var keys = snapshot.value.keys;
                 var data = snapshot.value;
+                receivedModelListTileCards.clear();
                 folderModelList.clear();
                 fileModelList.clear();
                 for (var key2 in keys) {
@@ -113,7 +117,7 @@ class _SharedPageState extends State<SharedPage> {
             });
 
             setState(() {
-              receivedModelListTileCards.clear();
+              // receivedModelListTileCards.clear();
               // print(key);
               ReceivedUserModel receivedModelCard = new ReceivedUserModel(
                 receivedUserEmailId: receivedUserEmailid,

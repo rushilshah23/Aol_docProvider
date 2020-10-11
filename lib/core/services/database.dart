@@ -133,6 +133,74 @@ class DatabaseService {
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
+
+    String receiverId;
+    FirebaseDatabase _fbdb = FirebaseDatabase.instance;
+    DatabaseReference _db = _fbdb.reference();
+    await _db
+        .reference()
+        .child('shared')
+        .child('users')
+        .child(userID)
+        .child('send')
+        .reference()
+        .once()
+        .then((DataSnapshot snapshot) async {
+      if (snapshot.value != null) {
+        var data = snapshot.value;
+        var keys = snapshot.value.keys;
+        for (var key in keys) {
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(userID)
+              .child('send')
+              .child(key)
+              .reference()
+              .once()
+              .then((DataSnapshot snapshot) async {
+            if (snapshot.value != null) {
+              var data = snapshot.value;
+              var keys = snapshot.value.keys;
+              for (var key2 in keys) {
+                if (key2 == folderId) {
+                  receiverId = key;
+                  print(receiverId);
+                  await _db
+                      .reference()
+                      .child('shared')
+                      .child('users')
+                      .child(receiverId)
+                      .child('received')
+                      .child(userID)
+                      // .child(key)
+                      .reference()
+                      .child(key2)
+                      .update({
+                    'folderName': newFolderName,
+                    'modifiedAt': Timestamp.now().toDate().toIso8601String(),
+                  }).then((_) async {
+                    await _db
+                        .reference()
+                        .child('shared')
+                        .child('users')
+                        .child(userID)
+                        .child('send')
+                        .child(receiverId)
+                        .child(folderId)
+                        .update({
+                      'folderName': newFolderName,
+                      'modifiedAt': Timestamp.now().toDate().toIso8601String(),
+                    });
+                  });
+                }
+              }
+            }
+          });
+        }
+      }
+    });
   }
 
   Future deleteFolder({
@@ -200,6 +268,7 @@ class DatabaseService {
     String receiverId;
     FirebaseDatabase _fbdb = FirebaseDatabase.instance;
     DatabaseReference _db = _fbdb.reference();
+    print("at send end $userID");
     await _db
         .reference()
         .child('shared')
@@ -267,6 +336,74 @@ class DatabaseService {
     await driveRef.reference().update({
       'fileName': newFileName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
+    });
+
+    String receiverId;
+    FirebaseDatabase _fbdb = FirebaseDatabase.instance;
+    DatabaseReference _db = _fbdb.reference();
+    await _db
+        .reference()
+        .child('shared')
+        .child('users')
+        .child(userID)
+        .child('send')
+        .reference()
+        .once()
+        .then((DataSnapshot snapshot) async {
+      if (snapshot.value != null) {
+        var data = snapshot.value;
+        var keys = snapshot.value.keys;
+        for (var key in keys) {
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(userID)
+              .child('send')
+              .child(key)
+              .reference()
+              .once()
+              .then((DataSnapshot snapshot) async {
+            if (snapshot.value != null) {
+              var data = snapshot.value;
+              var keys = snapshot.value.keys;
+              for (var key2 in keys) {
+                if (key2 == fileId) {
+                  receiverId = key;
+                  print(receiverId);
+                  await _db
+                      .reference()
+                      .child('shared')
+                      .child('users')
+                      .child(receiverId)
+                      .child('received')
+                      .child(userID)
+                      // .child(key)
+                      .reference()
+                      .child(key2)
+                      .update({
+                    'fileName': newFileName,
+                    'modifiedAt': Timestamp.now().toDate().toIso8601String(),
+                  }).then((_) async {
+                    await _db
+                        .reference()
+                        .child('shared')
+                        .child('users')
+                        .child(userID)
+                        .child('send')
+                        .child(receiverId)
+                        .child(fileId)
+                        .update({
+                      'fileName': newFileName,
+                      'modifiedAt': Timestamp.now().toDate().toIso8601String(),
+                    });
+                  });
+                }
+              }
+            }
+          });
+        }
+      }
     });
   }
 
@@ -499,6 +636,7 @@ class DatabaseService {
             .set({
           'receiverEmailId': receiverEmailId,
           'documentSenderId': folderModel.userId ?? null,
+          'documentReceiverId': receiverId ?? null,
           'folderId': folderModel.folderId ?? null,
           'folderParentId': folderModel.parentId ?? null,
           'documentType': folderModel.documentType ?? null,
@@ -523,6 +661,7 @@ class DatabaseService {
             .set({
           'receiverEmailId': receiverEmailId,
           'documentSenderId': folderModel.userId ?? null,
+          'documentReceiverId': receiverId ?? null,
           'folderId': folderModel.folderId ?? null,
           'folderParentId': folderModel.parentId ?? null,
           'documentType': folderModel.documentType ?? null,

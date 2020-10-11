@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class FileCard extends StatefulWidget {
   final FileModel fileModel;
+  final dynamic documentSenderId;
   // final dynamic userId;
   // final dynamic parentId;
   // final dynamic fileId;
@@ -29,6 +30,7 @@ class FileCard extends StatefulWidget {
 
   FileCard({
     this.fileModel,
+    this.documentSenderId,
     // this.userId,
     // this.parentId,
     // this.fileId,
@@ -98,7 +100,9 @@ class _FileCardState extends State<FileCard> {
                   color: Colors.white,
                   onPressed: () async {
                     try {
-                      DatabaseService(userID: widget.fileModel.userId)
+                      DatabaseService(
+                              userID: widget.documentSenderId ??
+                                  widget.fileModel.userId)
                           .downloadFile(
                               fileName: widget.fileModel.fileName,
                               fileDownloadLink:
@@ -140,7 +144,8 @@ class _FileCardState extends State<FileCard> {
                   color: Colors.white,
                   onPressed: () async {
                     DatabaseService(
-                      userID: widget.fileModel.userId,
+                      userID:
+                          widget.documentSenderId ?? widget.fileModel.userId,
                       // driveRef: widget.fileModel.globalRef
                     )
                         .deleteFile(
@@ -225,7 +230,7 @@ class _FileCardState extends State<FileCard> {
               onPressed: () async {
                 if (_renameFileKey.currentState.validate()) {
                   DatabaseService(
-                    userID: widget.fileModel.userId,
+                    userID: widget.documentSenderId ?? widget.fileModel.userId,
                     driveRef: _folderRef,
                     // widget.fileModel.globalRef
                   ).renameFile(
@@ -308,10 +313,11 @@ class _FileCardState extends State<FileCard> {
                   ),
                   ListTile(
                     leading: Icon(Icons.share, color: Colors.black),
-                    title: Text("Share with Manager"),
+                    title: Text("Share"),
                     onTap: () async {
                       shareWithPopUp(
                         context,
+                        documentSenderId: widget.documentSenderId,
                         documentType: documentType.file,
                         fileModel: widget.fileModel,
                         focusNode: _focusNode,

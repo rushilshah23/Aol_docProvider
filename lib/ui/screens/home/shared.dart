@@ -35,96 +35,107 @@ class _SharedPageState extends State<SharedPage> {
     //     .child(userModelVar.uid)
     //     .child('received');
     // .reference();
-    getReceivedUsersEmail();
+
+    // getReceivedUsersEmail();
+
     // getReceivedModelListTileList();
     super.initState();
   }
 
-  getReceivedUsersEmail() async {
+  Future<List<ReceivedModelListTile>> getReceivedUsersEmail() async {
+    // print("shared");
     await _shareRef
         .reference()
         .child('shared')
         .child('users')
         .child(userModelVar.uid)
         .child('received')
-        // .reference()
+        .reference()
         .once()
         .then((snapshot) async {
-      // receivedModelListTileCards.clear();
+      receivedModelListTileCards.clear();
       if (snapshot.value != null) {
-        var keys = snapshot.value.keys;
-        var data = snapshot.value;
-        receivedModelListTileCards.clear();
-        for (var key in keys) {
-          var receivedUserEmailid =
-              await DatabaseService().getEmailIdfromUserId(userId: key);
-          await _shareRef
-              .reference()
-              .child('shared')
-              .child('users')
-              .child(userModelVar.uid)
-              .child('received')
-              .child(key)
-              .once()
-              .then((snapshot) {
-            if (snapshot.value != null) {
-              var keys = snapshot.value.keys;
-              var data = snapshot.value;
-              folderModelList.clear();
-              fileModelList.clear();
-              for (var key2 in keys) {
-                if (data[key2]['documentSenderId'] == key) {
-                  if (data[key2]['documentType'] == 'documentType.folder') {
-                    setState(() {
-                      FolderModel folderModel = new FolderModel(
-                          userId: data[key2]['folderSenderId'],
-                          parentId: data[key2]['folderParentId'],
-                          folderId: data[key2]['folderId'],
-                          documentType: data[key2]['folderDocumentType'],
-                          globalRef: data[key2]['folderGlobalRef'],
-                          folderName: data[key2]['folderName'],
-                          createdAt: data[key2]['folderCreatedAt']);
-                      folderModelList.add(FolderCard(folderModel: folderModel));
-                    });
-                  } else if (data[key2]['documentType'] ==
-                      'documentType.file') {
-                    setState(() {
-                      FileModel fileModel = new FileModel(
-                          userId: data[key2]['fileSenderId'],
-                          parentId: data[key2]['fileParentId'],
-                          fileId: data[key2]['fileId'],
-                          documentType: data[key2]['fileDocumentType'],
-                          globalRef: data[key2]['fileGlobalRef'],
-                          fileName: data[key2]['fileName'],
-                          createdAt: data[key2]['fileCreatedAt']);
-                      fileModelList.add(FileCard(fileModel: fileModel));
-                    });
+        try {
+          var keys = snapshot.value.keys;
+          var data = snapshot.value;
+          // receivedModelListTileCards.clear();
+          for (var key in keys) {
+            var receivedUserEmailid =
+                await DatabaseService().getEmailIdfromUserId(userId: key);
+            await _shareRef
+                .reference()
+                .child('shared')
+                .child('users')
+                .child(userModelVar.uid)
+                .child('received')
+                .child(key)
+                .once()
+                .then((snapshot) {
+              if (snapshot.value != null) {
+                var keys = snapshot.value.keys;
+                var data = snapshot.value;
+                folderModelList.clear();
+                fileModelList.clear();
+                for (var key2 in keys) {
+                  if (data[key2]['documentSenderId'] == key) {
+                    if (data[key2]['documentType'] == 'documentType.folder') {
+                      setState(() {
+                        FolderModel folderModel = new FolderModel(
+                            userId: data[key2]['folderSenderId'],
+                            parentId: data[key2]['folderParentId'],
+                            folderId: data[key2]['folderId'],
+                            documentType: data[key2]['folderDocumentType'],
+                            globalRef: data[key2]['folderGlobalRef'],
+                            folderName: data[key2]['folderName'],
+                            createdAt: data[key2]['folderCreatedAt']);
+                        folderModelList.add(FolderCard(
+                          folderModel: folderModel,
+                          documentSenderId: data[key2]['documentSenderId'],
+                        ));
+                      });
+                    } else if (data[key2]['documentType'] ==
+                        'documentType.file') {
+                      setState(() {
+                        FileModel fileModel = new FileModel(
+                            userId: data[key2]['fileSenderId'],
+                            parentId: data[key2]['fileParentId'],
+                            fileId: data[key2]['fileId'],
+                            documentType: data[key2]['fileDocumentType'],
+                            globalRef: data[key2]['fileGlobalRef'],
+                            fileName: data[key2]['fileName'],
+                            createdAt: data[key2]['fileCreatedAt']);
+                        fileModelList.add(FileCard(fileModel: fileModel));
+                      });
+                    }
                   }
                 }
               }
-            }
-          });
+            });
 
-          setState(() {
-            // print(key);
-            ReceivedUserModel receivedModelCard = new ReceivedUserModel(
-              receivedUserEmailId: receivedUserEmailid,
-              receivedUserUid: key,
-              userId: userModelVar.uid,
-              fileModelList: fileModelList,
-              folderModelList: folderModelList,
-              // receiverRef: _shareRef
-              // .reference()
-              // .child('users')
-              // .child(userModelVar.uid)
-              // .child('received')
-              // .reference(),
-            );
+            setState(() {
+              receivedModelListTileCards.clear();
+              // print(key);
+              ReceivedUserModel receivedModelCard = new ReceivedUserModel(
+                receivedUserEmailId: receivedUserEmailid,
+                receivedUserUid: key,
+                userId: userModelVar.uid,
+                fileModelList: fileModelList,
+                folderModelList: folderModelList,
+                // receiverRef: _shareRef
+                // .reference()
+                // .child('users')
+                // .child(userModelVar.uid)
+                // .child('received')
+                // .reference(),
+              );
 
-            receivedModelListTileCards.add(ReceivedModelListTile(
-              receivedUserModel: receivedModelCard,
-            ));
-          });
+              receivedModelListTileCards.add(ReceivedModelListTile(
+                receivedUserModel: receivedModelCard,
+              ));
+            });
+          }
+        } catch (e) {
+          print(e.toString());
         }
       }
     });
@@ -172,12 +183,13 @@ class _SharedPageState extends State<SharedPage> {
                                       shrinkWrap: true,
                                       scrollDirection: Axis.vertical,
                                       itemCount:
-                                          receivedModelListTileCards.length,
+                                          receivedModelListTileCards.length ??
+                                              0,
                                       itemBuilder: (_, index) {
                                         return receivedModelListTileCards[
                                             index];
                                       })
-                                  : Text('Nothing to show')
+                                  : Text('Nothing to show1')
                             ],
                           ),
                         )

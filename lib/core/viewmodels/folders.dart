@@ -14,7 +14,12 @@ import 'package:provider/provider.dart';
 
 class FolderCard extends StatefulWidget {
   final FolderModel folderModel;
-  FolderCard({@required this.folderModel});
+  final dynamic documentSenderId;
+
+  FolderCard({
+    @required this.folderModel,
+    this.documentSenderId,
+  });
   @override
   _FolderCardState createState() => _FolderCardState();
 }
@@ -65,7 +70,8 @@ class _FolderCardState extends State<FolderCard> {
 
                             // globalRef:
                             //     widget.globalRef.child(widget.folderId),
-                            userID: widget.folderModel.userId)
+                            userID: widget.documentSenderId ??
+                                widget.folderModel.userId)
                         .deleteFolder(
                       folderId: widget.folderModel.folderId,
                       driveRef: _folderRef,
@@ -150,7 +156,8 @@ class _FolderCardState extends State<FolderCard> {
                             // globalRef: widget.globalRef
                             //     .child(widget.folderId)
                             //     .reference(),
-                            userID: widget.folderModel.userId)
+                            userID: widget.documentSenderId ??
+                                widget.folderModel.userId)
                         .renameFolder(
                             folderId: widget.folderModel.folderId,
                             newFolderName: _renameFolderController.text,
@@ -215,10 +222,11 @@ class _FolderCardState extends State<FolderCard> {
                   ),
                   ListTile(
                     leading: Icon(Icons.share, color: Colors.black),
-                    title: Text("Share with Manager"),
+                    title: Text("Share"),
                     onTap: () {
                       shareWithPopUp(
                         context,
+                        documentSenderId: widget.documentSenderId,
                         documentType: documentType.folder,
                         folderModel: widget.folderModel,
                         // docId: widget.folderModel.folderId,
@@ -319,6 +327,7 @@ class _FolderCardState extends State<FolderCard> {
                         //   ),
                         // ),
                         SizedBox(width: 5),
+
                         IconButton(
                             icon: FaIcon(FontAwesomeIcons.ellipsisV),
                             onPressed: () {

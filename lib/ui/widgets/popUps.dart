@@ -12,6 +12,7 @@ shareWithPopUp(
   FocusNode focusNode,
   FolderModel folderModel,
   FileModel fileModel,
+  String documentSenderId,
   documentType documentType,
   // String docId,
   // DatabaseReference yourRef,
@@ -70,7 +71,7 @@ shareWithPopUp(
                     // userID: folderModel.userId ?? fileModel.userId,
                     // userID: fileModel.userId,
 
-                    userID: _userModel.uid,
+                    userID: documentSenderId ?? _userModel.uid,
 
                     // driveRef: folderModel.globalRef
                   ).shareWith(

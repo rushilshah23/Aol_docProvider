@@ -43,7 +43,7 @@ class _SharedPageState extends State<SharedPage> {
     //     .child('received');
     // .reference();
 
-    // getReceivedUsersEmail();
+    getReceivedUsersEmail();
 
     // getReceivedModelListTileList();
     super.initState();
@@ -64,7 +64,7 @@ class _SharedPageState extends State<SharedPage> {
         // .child('received')
         // .reference()
         .once()
-        .then((snapshot) async {
+        .then((DataSnapshot snapshot) async {
       receivedModelListTileCards.clear();
       // folderModelList.clear();
       // fileModelList.clear();
@@ -80,75 +80,12 @@ class _SharedPageState extends State<SharedPage> {
 
             receivedUserEmailid =
                 await DatabaseService().getEmailIdfromUserId(userId: key);
-
-            // await _shareRef
-            //     .reference()
-            //     .child('shared')
-            //     .child('users')
-            //     .child(userModelVar.uid)
-            //     .child('received')
-            //     .child(key)
-            //     .once()
-            //     .then((snapshot) {
-            //   if (snapshot.value != null) {
-            //     var keys = snapshot.value.keys;
-            //     var data = snapshot.value;
-            //     receivedModelListTileCards.clear();
-            //     folderModelList.clear();
-            //     fileModelList.clear();
-            //     for (var key2 in keys) {
-            //       if (data[key2]['documentSenderId'] == key) {
-            //         if (data[key2]['documentType'] == 'documentType.folder') {
-            //           setState(() {
-            // FolderModel folderModel = new FolderModel(
-            //     userId: data[key2]['folderSenderId'],
-            //     parentId: data[key2]['folderParentId'],
-            //     folderId: data[key2]['folderId'],
-            //     documentType: data[key2]['folderDocumentType'],
-            //     globalRef: data[key2]['folderGlobalRef'],
-            //     folderName: data[key2]['folderName'],
-            //     createdAt: data[key2]['folderCreatedAt']);
-            // folderModelList.add(FolderCard(
-            //   folderModel: folderModel,
-            //   documentSenderId: data[key2]['documentSenderId'],
-            // ));
-            //           });
-            //         } else if (data[key2]['documentType'] ==
-            //             'documentType.file') {
-            //           setState(() {
-            //             FileModel fileModel = new FileModel(
-            //                 userId: data[key2]['fileSenderId'],
-            //                 parentId: data[key2]['fileParentId'],
-            //                 fileId: data[key2]['fileId'],
-            //                 documentType: data[key2]['fileDocumentType'],
-            //                 globalRef: data[key2]['fileGlobalRef'],
-            //                 fileName: data[key2]['fileName'],
-            //                 createdAt: data[key2]['fileCreatedAt']);
-            //             fileModelList.add(FileCard(fileModel: fileModel));
-            //           });
-            //         }
-            //       }
-            //     }
-            //   }
-            // });
-
-            // receivedModelListTileCards.clear();
-            // print(key);\
             setState(() {
               //  getUserEmailFromKey(key: key);
               ReceivedUserModel receivedModelCard = new ReceivedUserModel(
                 receivedUserEmailId: receivedUserEmailid,
                 receivedUserUid: key,
                 userId: userModelVar.uid,
-
-                // fileModelList: fileModelList,
-                // folderModelList: folderModelList,
-                // receiverRef: _shareRef
-                // .reference()
-                // .child('users')
-                // .child(userModelVar.uid)
-                // .child('received')
-                // .reference(),
               );
 
               receivedModelListTileCards.add(ReceivedModelListTile(
@@ -187,7 +124,7 @@ class _SharedPageState extends State<SharedPage> {
                 // .reference()
                 .onValue,
         builder: (context, snapshot) {
-          getReceivedUsersEmail();
+          // getReceivedUsersEmail();
           return snapshot.hasData && !snapshot.hasError
               ?
 
@@ -201,19 +138,15 @@ class _SharedPageState extends State<SharedPage> {
                       ? Container(
                           child: ListView(
                             children: [
-                              receivedModelListTileCards.length != 0
-                                  ? ListView.builder(
-                                      physics: ScrollPhysics(),
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      itemCount:
-                                          receivedModelListTileCards.length ??
-                                              0,
-                                      itemBuilder: (_, index) {
-                                        return receivedModelListTileCards[
-                                            index];
-                                      })
-                                  : Text('No documents')
+                              ListView.builder(
+                                  physics: ScrollPhysics(),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount:
+                                      receivedModelListTileCards.length ?? 0,
+                                  itemBuilder: (_, index) {
+                                    return receivedModelListTileCards[index];
+                                  })
                             ],
                           ),
                         )
@@ -221,7 +154,7 @@ class _SharedPageState extends State<SharedPage> {
                           child: Container(
                             padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
                             child: Text(
-                              'Nothing to show',
+                              'No Items',
                               style: TextStyle(
                                   fontSize: 40,
                                   fontWeight: FontWeight.bold,

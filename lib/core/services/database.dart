@@ -214,9 +214,13 @@ class DatabaseService {
     // await driveRef.reference().child(folderId).remove();
     await driveRef.reference().remove();
 
-    var storage =
-        // _dbStorage.child(driveRef.reference().path).child(folderId).delete();
-        _dbStorage.child(driveRef.reference().path).delete();
+    try {
+      await _dbStorage.child(driveRef.reference().path).delete();
+    } catch (e) {
+      print(e.toString());
+    }
+
+    // _dbStorage.child(driveRef.reference().path).child(folderId).delete();
 
     // await globalRef.reference().child(folderId).remove();
 
@@ -553,7 +557,7 @@ class DatabaseService {
     return receiverId ?? null;
   }
 
-  Future<String> getEmailIdfromUserId({String userId}) async {
+  getEmailIdfromUserId({String userId}) async {
     String receiverEmailId;
     try {
       var getEmailId = await _db

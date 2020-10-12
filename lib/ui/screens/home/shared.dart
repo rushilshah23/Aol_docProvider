@@ -21,16 +21,23 @@ class SharedPage extends StatefulWidget {
 class _SharedPageState extends State<SharedPage> {
   DatabaseReference _shareRef;
   final FirebaseDatabase _fbdb = FirebaseDatabase.instance;
-  List<ReceivedModel> receivedModelCards = [];
+  // List<ReceivedModel> receivedModelCards = [];
   List<FolderCard> folderModelList = [];
   List<FileCard> fileModelList = [];
   List<ReceivedModelListTile> receivedModelListTileCards = [];
 
   UserModel userModelVar;
+  var receivedUserEmailid;
   void initState() {
     userModelVar = Provider.of<UserModel>(context, listen: false);
 
-    _shareRef = _fbdb.reference();
+    _shareRef = _fbdb
+        .reference()
+        .child('shared')
+        .child('users')
+        .child(userModelVar.uid)
+        .child('received')
+        .reference();
     //     .child('users')
     //     .child(userModelVar.uid)
     //     .child('received');
@@ -42,17 +49,23 @@ class _SharedPageState extends State<SharedPage> {
     super.initState();
   }
 
+  getUserEmailFromKey({String key}) async {
+    receivedUserEmailid =
+        await DatabaseService().getEmailIdfromUserId(userId: key);
+  }
+
   Future<List<ReceivedModelListTile>> getReceivedUsersEmail() async {
     // print("shared");
     await _shareRef
-        .reference()
-        .child('shared')
-        .child('users')
-        .child(userModelVar.uid)
-        .child('received')
-        .reference()
+        // .reference()
+        // .child('shared')
+        // .child('users')
+        // .child(userModelVar.uid)
+        // .child('received')
+        // .reference()
         .once()
         .then((snapshot) async {
+      receivedModelListTileCards.clear();
       // folderModelList.clear();
       // fileModelList.clear();
       if (snapshot.value != null) {
@@ -63,8 +76,11 @@ class _SharedPageState extends State<SharedPage> {
           // folderModelList.clear();
           // fileModelList.clear();
           for (var key in keys) {
-            var receivedUserEmailid =
+            // receivedUserEmailid = getUserEmailFromKey(key: key);
+
+            receivedUserEmailid =
                 await DatabaseService().getEmailIdfromUserId(userId: key);
+
             // await _shareRef
             //     .reference()
             //     .child('shared')
@@ -116,9 +132,10 @@ class _SharedPageState extends State<SharedPage> {
             //   }
             // });
 
+            // receivedModelListTileCards.clear();
+            // print(key);\
             setState(() {
-              // receivedModelListTileCards.clear();
-              // print(key);
+              //  getUserEmailFromKey(key: key);
               ReceivedUserModel receivedModelCard = new ReceivedUserModel(
                 receivedUserEmailId: receivedUserEmailid,
                 receivedUserUid: key,
@@ -152,21 +169,23 @@ class _SharedPageState extends State<SharedPage> {
     // var user = Provider.of<UserModel>(context);
     // getReceivedUsersEmail();
     return StreamBuilder<Event>(
-        stream: _fbdb
-            .reference()
-            .child('shared')
-            .child('users')
-            .child(userModelVar.uid)
-            .child('received')
-            .reference()
-            .onValue,
-        // _shareRef
-        // .reference()
-        // .child('users')
-        // .child(userModelVar.uid)
-        // .child('received')
-        // .reference()
-        // .onValue,
+        stream:
+            //  _fbdb
+            // .reference()
+            // .child('shared')
+            // .child('users')
+            // .child(userModelVar.uid)
+            // .child('received')
+            // .reference()
+            // .onValue,
+
+            _shareRef
+                // .reference()
+                // .child('users')
+                // .child(userModelVar.uid)
+                // .child('received')
+                // .reference()
+                .onValue,
         builder: (context, snapshot) {
           getReceivedUsersEmail();
           return snapshot.hasData && !snapshot.hasError

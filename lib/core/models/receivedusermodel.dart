@@ -7,15 +7,16 @@ class ReceivedUserModel {
   final String receivedUserEmailId;
   final String receivedUserUid;
   final String userId;
-  List<FolderCard> folderModelList;
-  List<FileCard> fileModelList;
+  // List<FolderCard> folderModelList;
+  // List<FileCard> fileModelList;
+
   // final DatabaseReference receiverRef;
   ReceivedUserModel({
     @required this.receivedUserEmailId,
     @required this.userId,
     // @required this.receiverRef,
     @required this.receivedUserUid,
-    this.fileModelList,
-    this.folderModelList,
+    // this.fileModelList,
+    // this.folderModelList,
   });
 }

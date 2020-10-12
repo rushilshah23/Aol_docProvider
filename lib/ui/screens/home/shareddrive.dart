@@ -1,5 +1,8 @@
+import 'package:Aol_docProvider/core/models/filemodel.dart';
+import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/models/receivedusermodel.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/database.dart';
 
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/drawer.dart';
@@ -32,11 +35,18 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
   DatabaseReference driveRef;
   final _focusNode = FocusNode();
 
+  List<FolderCard> folderModelList = [];
+  List<FileCard> fileModelList = [];
+
   final FirebaseDatabase _db = FirebaseDatabase.instance;
   DatabaseReference _databaseReference;
+  UserModel userModelVar;
 
   void initState() {
     _databaseReference = _db.reference();
+
+    userModelVar = Provider.of<UserModel>(context, listen: false);
+
     // driveRef = widget.ref.reference().child(widget.folderId);
     // driveRef = (widget.ref).reference();
 
@@ -46,8 +56,8 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
 
     // databaseReference = databaseReference.child(widget.folderId).reference();
     // setState(() {
-    // getFilesList();
-    // getFoldersList();
+    // getFileCardList();
+    // getFolderCardList();
     // });
     // getFoldersList();
     // getFilesList();
@@ -60,6 +70,102 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
     //   }
     // });
     // seperateFileFolder();
+  }
+
+  Future<List<FolderCard>> getFolderCardList() async {
+    await _databaseReference
+        .reference()
+        .child('shared')
+        .child('users')
+        .child(userModelVar.uid)
+        .child('received')
+        .child(widget.receivedUserModel.receivedUserUid)
+        .reference()
+        .once()
+        .then((DataSnapshot snapshot) async {
+      folderModelList.clear();
+      // folderModelList.clear();
+      // fileModelList.clear();
+      if (snapshot.value != null) {
+        try {
+          var keys = snapshot.value.keys;
+          var data = snapshot.value;
+          // receivedModelListTileCards.clear();
+          // folderModelList.clear();
+          folderModelList.clear();
+          for (var key in keys) {
+            // if (data[key]['documentSenderId'] == key) {
+            if (data[key]['documentType'] == 'documentType.folder') {
+              setState(() {
+                FolderModel folderModel = new FolderModel(
+                    userId: data[key]['folderSenderId'],
+                    parentId: data[key]['folderParentId'],
+                    folderId: data[key]['folderId'],
+                    documentType: data[key]['folderDocumentType'],
+                    globalRef: data[key]['folderGlobalRef'],
+                    folderName: data[key]['folderName'],
+                    createdAt: data[key]['folderCreatedAt']);
+                folderModelList.add(FolderCard(
+                  folderModel: folderModel,
+                  documentSenderId: data[key]['documentSenderId'],
+                ));
+              });
+            }
+            // }
+          }
+        } catch (e) {
+          e.toString();
+        }
+      }
+    });
+
+    return folderModelList;
+  }
+
+  Future<List<FileCard>> getFileCardList() async {
+    await _databaseReference
+        .reference()
+        .child('shared')
+        .child('users')
+        .child(userModelVar.uid)
+        .child('received')
+        .child(widget.receivedUserModel.receivedUserUid)
+        .reference()
+        .once()
+        .then((snapshot) async {
+      // folderModelList.clear();
+      fileModelList.clear();
+      if (snapshot.value != null) {
+        try {
+          var keys = snapshot.value.keys;
+          var data = snapshot.value;
+          // receivedModelListTileCards.clear();
+          // folderModelList.clear();
+          fileModelList.clear();
+          for (var key in keys) {
+            if (data[key]['documentSenderId'] == key) {
+              if (data[key]['documentType'] == 'documentType.file') {
+                setState(() {
+                  FileModel fileModel = new FileModel(
+                      userId: data[key]['fileSenderId'],
+                      parentId: data[key]['fileParentId'],
+                      fileId: data[key]['fileId'],
+                      documentType: data[key]['fileDocumentType'],
+                      globalRef: data[key]['fileGlobalRef'],
+                      fileName: data[key]['fileName'],
+                      createdAt: data[key]['fileCreatedAt']);
+                  fileModelList.add(FileCard(fileModel: fileModel));
+                });
+              }
+            }
+          }
+        } catch (e) {
+          e.toString();
+        }
+      }
+    });
+
+    return fileModelList;
   }
 
   // seperateFileFolder() async {
@@ -390,8 +496,11 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
         //     DatabaseService(userID: widget.uid, driveRef: driveRef.reference())
         //         .documentStream,
         builder: (context, snapshot) {
-          // getFilesList();
-          // getFoldersList();
+          getFileCardList();
+          getFolderCardList();
+          print(
+              "length of received foldermodel list ${folderModelList.length}");
+          print("length of received filemodel list ${fileModelList.length}");
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(
@@ -417,26 +526,22 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
                   // ),
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,
-                  body: widget.receivedUserModel.folderModelList.length != 0 ||
-                          widget.receivedUserModel.fileModelList.length != 0
+                  body: folderModelList.length != 0 || fileModelList.length != 0
+                      // body: widget.receivedUserModel.folderModelList.length != 0 ||
+                      //         widget.receivedUserModel.fileModelList.length != 0
                       ? ListView(children: [
                           // Text(
                           //     "length of lsit = ${foldersCard.length + filesCard.length}"),
-                          widget.receivedUserModel.folderModelList.length !=
-                                      0 ||
-                                  widget.receivedUserModel.fileModelList
-                                          .length !=
-                                      0
+                          folderModelList.length != 0 ||
+                                  fileModelList.length != 0
                               ?
                               // && (foldersCard.length + filesCard.length) != null
                               GridView.builder(
                                   physics: ScrollPhysics(),
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
-                                  itemCount: (widget.receivedUserModel
-                                              .folderModelList.length +
-                                          widget.receivedUserModel.fileModelList
-                                              .length) ??
+                                  itemCount: (folderModelList.length +
+                                          fileModelList.length) ??
                                       0,
                                   // (foldersCard.length),
                                   gridDelegate:
@@ -449,17 +554,11 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
                                     // if (index is int) {
 
                                     return index <
-                                            widget
-                                                .receivedUserModel
-                                                .folderModelList
+                                            folderModelList
                                                 .length // &&  index >= 0
-                                        ? widget.receivedUserModel
-                                            .folderModelList[index]
-                                        : widget.receivedUserModel
-                                                .fileModelList[
-                                            index -
-                                                widget.receivedUserModel
-                                                    .folderModelList.length];
+                                        ? folderModelList[index]
+                                        : fileModelList[
+                                            index - folderModelList.length];
 
                                     // return foldersCard[index];
                                     // }

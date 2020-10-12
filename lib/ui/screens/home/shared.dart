@@ -59,62 +59,62 @@ class _SharedPageState extends State<SharedPage> {
         try {
           var keys = snapshot.value.keys;
           var data = snapshot.value;
-          // receivedModelListTileCards.clear();
+          receivedModelListTileCards.clear();
           // folderModelList.clear();
           // fileModelList.clear();
           for (var key in keys) {
             var receivedUserEmailid =
                 await DatabaseService().getEmailIdfromUserId(userId: key);
-            await _shareRef
-                .reference()
-                .child('shared')
-                .child('users')
-                .child(userModelVar.uid)
-                .child('received')
-                .child(key)
-                .once()
-                .then((snapshot) {
-              if (snapshot.value != null) {
-                var keys = snapshot.value.keys;
-                var data = snapshot.value;
-                receivedModelListTileCards.clear();
-                folderModelList.clear();
-                fileModelList.clear();
-                for (var key2 in keys) {
-                  if (data[key2]['documentSenderId'] == key) {
-                    if (data[key2]['documentType'] == 'documentType.folder') {
-                      setState(() {
-                        FolderModel folderModel = new FolderModel(
-                            userId: data[key2]['folderSenderId'],
-                            parentId: data[key2]['folderParentId'],
-                            folderId: data[key2]['folderId'],
-                            documentType: data[key2]['folderDocumentType'],
-                            globalRef: data[key2]['folderGlobalRef'],
-                            folderName: data[key2]['folderName'],
-                            createdAt: data[key2]['folderCreatedAt']);
-                        folderModelList.add(FolderCard(
-                          folderModel: folderModel,
-                          documentSenderId: data[key2]['documentSenderId'],
-                        ));
-                      });
-                    } else if (data[key2]['documentType'] ==
-                        'documentType.file') {
-                      setState(() {
-                        FileModel fileModel = new FileModel(
-                            userId: data[key2]['fileSenderId'],
-                            parentId: data[key2]['fileParentId'],
-                            fileId: data[key2]['fileId'],
-                            documentType: data[key2]['fileDocumentType'],
-                            globalRef: data[key2]['fileGlobalRef'],
-                            fileName: data[key2]['fileName'],
-                            createdAt: data[key2]['fileCreatedAt']);
-                        fileModelList.add(FileCard(fileModel: fileModel));
-                      });
-                    }
-                  }
-                }
-              }
-            });
+            // await _shareRef
+            //     .reference()
+            //     .child('shared')
+            //     .child('users')
+            //     .child(userModelVar.uid)
+            //     .child('received')
+            //     .child(key)
+            //     .once()
+            //     .then((snapshot) {
+            //   if (snapshot.value != null) {
+            //     var keys = snapshot.value.keys;
+            //     var data = snapshot.value;
+            //     receivedModelListTileCards.clear();
+            //     folderModelList.clear();
+            //     fileModelList.clear();
+            //     for (var key2 in keys) {
+            //       if (data[key2]['documentSenderId'] == key) {
+            //         if (data[key2]['documentType'] == 'documentType.folder') {
+            //           setState(() {
+            // FolderModel folderModel = new FolderModel(
+            //     userId: data[key2]['folderSenderId'],
+            //     parentId: data[key2]['folderParentId'],
+            //     folderId: data[key2]['folderId'],
+            //     documentType: data[key2]['folderDocumentType'],
+            //     globalRef: data[key2]['folderGlobalRef'],
+            //     folderName: data[key2]['folderName'],
+            //     createdAt: data[key2]['folderCreatedAt']);
+            // folderModelList.add(FolderCard(
+            //   folderModel: folderModel,
+            //   documentSenderId: data[key2]['documentSenderId'],
+            // ));
+            //           });
+            //         } else if (data[key2]['documentType'] ==
+            //             'documentType.file') {
+            //           setState(() {
+            //             FileModel fileModel = new FileModel(
+            //                 userId: data[key2]['fileSenderId'],
+            //                 parentId: data[key2]['fileParentId'],
+            //                 fileId: data[key2]['fileId'],
+            //                 documentType: data[key2]['fileDocumentType'],
+            //                 globalRef: data[key2]['fileGlobalRef'],
+            //                 fileName: data[key2]['fileName'],
+            //                 createdAt: data[key2]['fileCreatedAt']);
+            //             fileModelList.add(FileCard(fileModel: fileModel));
+            //           });
+            //         }
+            //       }
+            //     }
+            //   }
+            // });
 
             setState(() {
               // receivedModelListTileCards.clear();
@@ -123,8 +123,9 @@ class _SharedPageState extends State<SharedPage> {
                 receivedUserEmailId: receivedUserEmailid,
                 receivedUserUid: key,
                 userId: userModelVar.uid,
-                fileModelList: fileModelList,
-                folderModelList: folderModelList,
+
+                // fileModelList: fileModelList,
+                // folderModelList: folderModelList,
                 // receiverRef: _shareRef
                 // .reference()
                 // .child('users')
@@ -174,7 +175,7 @@ class _SharedPageState extends State<SharedPage> {
               // getReceivedModelListTileList();
               Scaffold(
                   appBar: AppBar(
-                    title: Text('shared with you'),
+                    title: Text('Documents shared with you'),
                     backgroundColor: appColor,
                   ),
                   body: receivedModelListTileCards.length != 0
@@ -193,7 +194,7 @@ class _SharedPageState extends State<SharedPage> {
                                         return receivedModelListTileCards[
                                             index];
                                       })
-                                  : Text('Nothing to show1')
+                                  : Text('No documents')
                             ],
                           ),
                         )

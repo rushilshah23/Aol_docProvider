@@ -1,13 +1,11 @@
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
-
 import 'package:Aol_docProvider/ui/screens/home/drive.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/popUps.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -152,10 +150,6 @@ class _FolderCardState extends State<FolderCard> {
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
                     DatabaseService(
-
-                            // globalRef: widget.globalRef
-                            //     .child(widget.folderId)
-                            //     .reference(),
                             userID: widget.documentSenderId ??
                                 widget.folderModel.userId)
                         .renameFolder(
@@ -164,8 +158,6 @@ class _FolderCardState extends State<FolderCard> {
                             driveRef: _folderRef);
                     _renameFolderController.clear();
                     Navigator.pop(context);
-                    // DatabaseService(userID: widget.userId).renameFolder();
-                    // Navigator.pop(context);
                   }
                 },
                 child: Text(
@@ -188,7 +180,6 @@ class _FolderCardState extends State<FolderCard> {
   }
 
   void folderOptions(BuildContext context) {
-    // var userModelVar = Provider.of<UserModel>(context);
     showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -229,13 +220,7 @@ class _FolderCardState extends State<FolderCard> {
                         documentSenderId: widget.documentSenderId,
                         documentType: documentType.folder,
                         folderModel: widget.folderModel,
-                        // docId: widget.folderModel.folderId,
-                        // yourRef: widget.folderModel.globalRef,
                         focusNode: _focusNode,
-                        // docName: widget.folderModel.folderName,
-                        // userId: widget.folderModel.userId,
-                        // senderEmailId: userModelVar.userEmail,
-                        // documentType: documentType.folder,
                       );
                       // Navigator.pop(context);
                     },
@@ -273,26 +258,6 @@ class _FolderCardState extends State<FolderCard> {
                         uid: widget.folderModel.userId,
                         folderId: widget.folderModel.folderId,
                         ref: _folderRefPath,
-                        // widget.globalRef.reference().child(widget.folderId),
-                        // widget.globalRef
-                        //     .reference()
-                        //     .child(widget.folderId)
-                        //     .reference(),
-                        // widget.globalRef;
-                        // widget.globalRef.reference();
-                        // .reference(),
-                        // .reference(),
-
-                        // widget.folderModel.globalRef
-                        //     .reference()
-                        //     .child(widget.folderModel.folderId),
-
-                        // widget.globalRef.reference(),
-
-                        // widget.globalRef.reference(),
-
-                        // folderPath: widget.folderPath,
-                        // realFolderPath: widget.realFolderPath,
                         folderName: widget.folderModel.folderName,
                       );
                     }));
@@ -318,16 +283,7 @@ class _FolderCardState extends State<FolderCard> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        // Text(
-                        //   "${widget.folderName}",
-                        //   overflow: TextOverflow.,
-                        //   maxLines: 1,
-                        //   style: TextStyle(
-                        //     fontSize: 16,
-                        //   ),
-                        // ),
                         SizedBox(width: 5),
-
                         IconButton(
                             icon: FaIcon(FontAwesomeIcons.ellipsisV),
                             onPressed: () {

@@ -1,6 +1,5 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/authenticationService.dart';
-
 import 'package:Aol_docProvider/ui/screens/home/shared.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/loading.dart';
@@ -63,11 +62,6 @@ Widget homeDrawer(BuildContext context) {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return SharedPage();
                   }));
-                  // SharedPage();
-                  // isLoading = true;
-                  // _auth.signoutEmailId();
-                  // isLoading = false;
-                  // Navigator.pop(context);
                 },
               ),
             ],

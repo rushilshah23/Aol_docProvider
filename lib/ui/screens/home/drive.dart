@@ -18,16 +18,12 @@ class DrivePage extends StatefulWidget {
   final String folderId;
   final dynamic ref;
 
-  // final String folderPath;
-  // final String realFolderPath;
   final String folderName;
   DrivePage({
     @required this.uid,
     this.pid,
     this.folderId,
     this.ref,
-    // this.folderPath,
-    // this.realFolderPath,
     this.folderName,
   });
 
@@ -46,27 +42,10 @@ class _DrivePageState extends State<DrivePage> {
   final _focusNode = FocusNode();
 
   final FirebaseDatabase db = FirebaseDatabase.instance;
-  // var reference;
 
   void initState() {
     driveRef =
         db.reference().child(widget.ref).reference().child(widget.folderId);
-
-    // driveRef = widget.ref.reference().child(widget.folderId);
-    // driveRef = (widget.ref).reference();
-
-    // driveRef = widget.ref;
-
-    print(driveRef.path);
-    // .child(widget.folderId);
-    // reference = db.reference();
-    // databaseReference = databaseReference.child(widget.folderId).reference();
-    // setState(() {
-    // getFilesList();
-    // getFoldersList();
-    // });
-    // getFoldersList();
-    // getFilesList();
 
     super.initState();
     _focusNode.addListener(() {
@@ -79,7 +58,6 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   Future<List<FolderCard>> getFoldersList() async {
-    // print("drive");
     await driveRef.once().then((DataSnapshot snapshot) {
       foldersCard.clear();
       if (snapshot.value != null) {
@@ -107,12 +85,7 @@ class _DrivePageState extends State<DrivePage> {
                   ));
                 });
               }
-
-              // else {
-              //   getFoldersList();
-              // }
             }
-            // }
           }
         } catch (e) {
           debugPrint(e.toString());
@@ -124,9 +97,6 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   Future<List<FileCard>> getFilesList() async {
-    // var db = FirebaseDatabase.instance;
-    // var ref = db.reference();
-
     await driveRef.once().then((DataSnapshot snapshot) {
       filesCard.clear();
       if (snapshot.value != null) {
@@ -272,7 +242,6 @@ class _DrivePageState extends State<DrivePage> {
                       folderName: _folderNameController.text,
                       parentId: widget.folderId,
                       driveRef: driveRef,
-                      // driveRef: TODO
                     );
                     Navigator.pop(context);
                     foldercreatedpopup(context);
@@ -352,7 +321,6 @@ class _DrivePageState extends State<DrivePage> {
 
   Future<bool> gobackFolder() async {
     setState(() {
-      // driveRef.reference().parent().reference();
       driveRef.parent().reference();
     });
     return true;
@@ -361,13 +329,8 @@ class _DrivePageState extends State<DrivePage> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<UserModel>(context);
-    // getFilesList();
-    // getFoldersList();
 
-    // DatabaseService(userID: user.uid).getFoldersList(widget.realFolderPath);
-    // var _dbRef = FirebaseDatabase.instance.reference().child('users').child(user.uid).child('documentManager').onValue;
     return StreamBuilder<Event>(
-        // stream: driveRef.reference().onValue,
         stream: db
             .reference()
             .child('users')
@@ -375,16 +338,12 @@ class _DrivePageState extends State<DrivePage> {
             .child('documentManager')
             .reference()
             .onValue,
-        // stream:
-        //     DatabaseService(userID: widget.uid, driveRef: driveRef.reference())
-        //         .documentStream,
         builder: (context, snapshot) {
           getFilesList();
           getFoldersList();
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(
-                      // title: Text(widget.folderPath),
                       title: AutoSizeText(
                         widget.folderName,
                         overflow: TextOverflow.visible,
@@ -410,50 +369,23 @@ class _DrivePageState extends State<DrivePage> {
                     onWillPop: gobackFolder,
                     child: foldersCard.length != 0 || filesCard.length != 0
                         ? ListView(children: [
-                            // Text(
-                            //     "length of lsit = ${foldersCard.length + filesCard.length}"),
                             foldersCard.length != 0 || filesCard.length != 0
-                                ?
-                                // && (foldersCard.length + filesCard.length) != null
-                                GridView.builder(
+                                ? GridView.builder(
                                     physics: ScrollPhysics(),
                                     shrinkWrap: true,
                                     scrollDirection: Axis.vertical,
                                     itemCount: (foldersCard.length +
                                             filesCard.length) ??
                                         0,
-                                    // (foldersCard.length),
                                     gridDelegate:
                                         SliverGridDelegateWithFixedCrossAxisCount(
                                             crossAxisCount: 2),
                                     itemBuilder: (_, index) {
-                                      // getFoldersList();
-                                      // getFilesList();
-                                      // if (index >= 0) {
-                                      // if (index is int) {
-
                                       return index < foldersCard.length
                                           // &&  index >= 0
                                           ? foldersCard[index]
                                           : filesCard[
                                               index - foldersCard.length];
-
-                                      // return foldersCard[index];
-                                      // }
-                                      // else
-                                      //   return Center(
-                                      //     child: Container(
-                                      //       padding:
-                                      //           EdgeInsets.fromLTRB(50, 300, 50, 200),
-                                      //       child: Text(
-                                      //         'No Items left',
-                                      //         style: TextStyle(
-                                      //             fontSize: 40,
-                                      //             fontWeight: FontWeight.bold,
-                                      //             color: appColor),
-                                      //       ),
-                                      //     ),
-                                      //   );
                                     })
                                 : Center(
                                     child: Container(

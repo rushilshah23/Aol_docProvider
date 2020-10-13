@@ -6,6 +6,3 @@ DatabaseReference shareRef = _firebaseDatabase.reference();
 DatabaseReference receiveRef = _firebaseDatabase.reference();
 
 String globalPath;
-// .child('users')
-// .child('DocumentManager')
-// .reference();

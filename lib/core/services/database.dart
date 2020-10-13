@@ -2,9 +2,7 @@ import 'dart:io';
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/services/pathnavigator.dart';
-
 import 'package:Aol_docProvider/ui/shared/constants.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:firebase_database/firebase_database.dart";
@@ -16,15 +14,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 class DatabaseService {
   final String userID;
-  // final String userEmail;
   final DatabaseReference driveRef;
-  // final String folderId;
 
   DatabaseService({
     this.userID,
     this.driveRef,
-    // this.userEmail,
-    // @required this.folderId,
   });
 
   final FirebaseDatabase _db = FirebaseDatabase.instance;
@@ -35,14 +29,6 @@ class DatabaseService {
   List<FolderModel> foldersCard = [];
 
   Future updateUserData({String folderName}) async {
-    DatabaseReference _createUserDrive = _db.reference();
-    // await _createUserDrive
-    //     .reference()
-    //     .child('users')
-    //     .child(userID)
-    //     .child('documentManager')
-    //     .reference()
-
     await globalRef
         .reference()
         .child('users')
@@ -52,21 +38,6 @@ class DatabaseService {
       'folderName': folderName,
       'userId': userID,
     });
-
-    // shareRef.reference().child('users').child(userID).child('shared');
-
-    // await databaseReference
-    //     // .reference()
-    //     // .child('users')
-    //     // .child(userID)
-    //     // .child('documentManager')
-    //     // .reference()
-    // await globalRef
-
-    // globalRef.reference().set({
-    //   'folderName': userEmail,
-    //   'userId': userID,
-    // });
   }
 
   Future createFolder({
@@ -77,7 +48,6 @@ class DatabaseService {
   }) async {
     var newKey = driveRef.reference().push().key;
     print(newKey);
-    // var newKey = globalRef.reference().push().key;
 
     await driveRef.child(newKey).set({
       'userId': userID,
@@ -97,18 +67,11 @@ class DatabaseService {
     File file = await FilePicker.getFile(type: FileType.custom);
 
     String fileName = file.path.split('/').last;
-    // StorageUploadTask uploadTask =
-    //     _dbStorage.child(parentPath).child(fileName).putFile(file);
-    // String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
     var newKey = driveRef.reference().push().key;
-    // var newKey = globalRef.reference().push().key;
 
-    StorageUploadTask uploadTask = _dbStorage
-        .child(driveRef.reference().path)
-        // .child(newKey)
-        .child(newKey)
-        .putFile(file);
+    StorageUploadTask uploadTask =
+        _dbStorage.child(driveRef.reference().path).child(newKey).putFile(file);
     String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
     await driveRef.child(newKey).set({
@@ -128,7 +91,6 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    // await driveRef.reference().child(folderId).update({
     await driveRef.reference().update({
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
@@ -147,7 +109,6 @@ class DatabaseService {
         .once()
         .then((DataSnapshot snapshot) async {
       if (snapshot.value != null) {
-        var data = snapshot.value;
         var keys = snapshot.value.keys;
         for (var key in keys) {
           await _db
@@ -161,7 +122,6 @@ class DatabaseService {
               .once()
               .then((DataSnapshot snapshot) async {
             if (snapshot.value != null) {
-              var data = snapshot.value;
               var keys = snapshot.value.keys;
               for (var key2 in keys) {
                 if (key2 == folderId) {
@@ -207,11 +167,6 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    // String ifexist = globalRef.reference().child(folderId).path;
-    // globalRef.reference().child(folderId).path;
-
-    // TODO at the end refer this
-    // await driveRef.reference().child(folderId).remove();
     await driveRef.reference().remove();
 
     try {
@@ -283,7 +238,6 @@ class DatabaseService {
         .once()
         .then((DataSnapshot snapshot) async {
       if (snapshot.value != null) {
-        var data = snapshot.value;
         var keys = snapshot.value.keys;
         for (var key in keys) {
           await _db
@@ -297,7 +251,6 @@ class DatabaseService {
               .once()
               .then((DataSnapshot snapshot) async {
             if (snapshot.value != null) {
-              var data = snapshot.value;
               var keys = snapshot.value.keys;
               for (var key2 in keys) {
                 if (key2 == folderId) {
@@ -355,7 +308,6 @@ class DatabaseService {
         .once()
         .then((DataSnapshot snapshot) async {
       if (snapshot.value != null) {
-        var data = snapshot.value;
         var keys = snapshot.value.keys;
         for (var key in keys) {
           await _db
@@ -369,7 +321,6 @@ class DatabaseService {
               .once()
               .then((DataSnapshot snapshot) async {
             if (snapshot.value != null) {
-              var data = snapshot.value;
               var keys = snapshot.value.keys;
               for (var key2 in keys) {
                 if (key2 == fileId) {
@@ -413,21 +364,10 @@ class DatabaseService {
 
   Future deleteFile(
       {String fileName, String fileId, DatabaseReference driveRef}) async {
-    // await driveRef.reference().child(fileId).remove();
     await driveRef.reference().remove();
     print("delete path ${driveRef.path}");
 
-    await _dbStorage
-        .child(driveRef.reference().path)
-        // .child(fileId)
-        // .child(fileName)
-        .delete();
-
-    // await _dbStorage.child(driveRef.reference().path).child(fileId).delete();
-
-    // StorageReference storageReference =
-    //     FirebaseStorage.instance.ref().child(filePath).getParent();
-    // var deleteTask = storageReference.child(fileName).delete();
+    await _dbStorage.child(driveRef.reference().path).delete();
 
     // AT SHARED SECTION
     String receiverId;
@@ -443,7 +383,6 @@ class DatabaseService {
         .once()
         .then((DataSnapshot snapshot) async {
       if (snapshot.value != null) {
-        var data = snapshot.value;
         var keys = snapshot.value.keys;
         for (var key in keys) {
           await _db
@@ -457,7 +396,6 @@ class DatabaseService {
               .once()
               .then((DataSnapshot snapshot) async {
             if (snapshot.value != null) {
-              var data = snapshot.value;
               var keys = snapshot.value.keys;
               for (var key2 in keys) {
                 if (key2 == fileId) {
@@ -498,7 +436,7 @@ class DatabaseService {
     final status = await Permission.storage.request();
     if (status.isGranted) {
       final dir = await getExternalStorageDirectory();
-      final downloadId = FlutterDownloader.enqueue(
+      await FlutterDownloader.enqueue(
           url: fileDownloadLink,
           savedDir: dir.path,
           fileName: fileName,
@@ -510,25 +448,13 @@ class DatabaseService {
   }
 
   Stream<Event> get documentStream {
-    // return _db
-    //     .reference()
-    //     .child('users')
-    //     .child(userID)
-    //     .child('documentManager')
-    //     .onValue;
-
     return driveRef.onValue;
   }
 
   Future<String> getuserIdfromEmailId({String emailId}) async {
     String receiverId;
     try {
-      var getuserId = await _db
-          .reference()
-          .child('users')
-          .reference()
-          .once()
-          .then((snapshot) {
+      await _db.reference().child('users').reference().once().then((snapshot) {
         if (snapshot.value != null) {
           var data = snapshot.value;
           var keys = snapshot.value.keys;
@@ -560,23 +486,14 @@ class DatabaseService {
   getEmailIdfromUserId({String userId}) async {
     String receiverEmailId;
     try {
-      var getEmailId = await _db
-          .reference()
-          .child('users')
-          .reference()
-          .once()
-          .then((snapshot) {
+      await _db.reference().child('users').reference().once().then((snapshot) {
         if (snapshot.value != null) {
           var data = snapshot.value;
           var keys = snapshot.value.keys;
           // if (data != null) {
           for (var key in keys) {
             if (data[key]['documentManager'] != null) {
-              // print(
-              //     "Searched email id ${data[key]['documentManager']['folderName']}");
               if (data[key]['documentManager']['userId'] == userId) {
-                // print(
-                //     "searching userid is ${data[key]['documentManager']['userId']}");
                 receiverEmailId = data[key]['documentManager']['folderName'];
               }
             } else
@@ -599,11 +516,6 @@ class DatabaseService {
     FolderModel folderModel,
     FileModel fileModel,
     @required documentType docType,
-    // String senderEmailId,
-    // String docId,
-    // DatabaseReference sharePath,
-    // String docName,
-    // documentType documentType
   }) async {
     print("in share with");
     FirebaseDatabase _fbdb = FirebaseDatabase.instance;
@@ -612,14 +524,13 @@ class DatabaseService {
 
     if (receiverId != null) {
       print('before push');
-      var shareId = _db
+      _db
           .reference()
           .child('shared')
           .child('users')
           .child(userID)
           .child('send')
           .child(receiverId)
-          // .reference()
           .push()
           .key;
       print('after push');
@@ -633,10 +544,7 @@ class DatabaseService {
             .child('send')
             .child(receiverId)
             .child(folderModel.folderId)
-            // .child(shareId)
             .reference()
-            // .reference()
-            // .child(receiverId)
             .set({
           'receiverEmailId': receiverEmailId,
           'documentSenderId': folderModel.userId ?? null,
@@ -658,10 +566,7 @@ class DatabaseService {
             .child('received')
             .child(userID)
             .child(folderModel.folderId)
-            // .child(shareId)
             .reference()
-            // // .reference()
-            // .child(receiverId)
             .set({
           'receiverEmailId': receiverEmailId,
           'documentSenderId': folderModel.userId ?? null,
@@ -684,10 +589,7 @@ class DatabaseService {
             .child('send')
             .child(receiverId)
             .child(fileModel.fileId)
-            // .child(shareId)
             .reference()
-            // .reference()
-            // .child(receiverId)
             .set({
           'receiverEmailId': receiverEmailId,
           'fileSenderId': fileModel.userId ?? null,
@@ -709,10 +611,7 @@ class DatabaseService {
             .child('received')
             .child(userID)
             .child(fileModel.fileId)
-            // .child(shareId)
             .reference()
-            // // .reference()
-            // .child(receiverId)
             .set({
           'receiverEmailId': receiverEmailId,
           'fileSenderId': fileModel.userId ?? null,
@@ -726,63 +625,6 @@ class DatabaseService {
           'documentSenderId': fileModel.userId ?? null,
         });
       }
-
-      // await shareRef
-      //     .reference()
-      //     .child('shared')
-      //     .child('users')
-      //     .child(userID)
-      //     .child('send')
-      //     .child(receiverId)
-      //     // .reference()
-      //     // .reference()
-      //     // .child(receiverId)
-      //     .set({
-      //   'receiverEmailId': receiverEmailId,
-      //   'folderSenderId': folderModel.userId ?? null,
-      //   'folderId': folderModel.folderId ?? null,
-      //   'folderParentId': folderModel.parentId ?? null,
-      //   'folderDocumentType': folderModel.documentType ?? null,
-      //   'folderGlobalRef': folderModel.globalRef.toString() ?? null,
-      //   'folderName': folderModel.folderName ?? null,
-      //   'folderCreatedAt': folderModel.createdAt ?? null,
-      //   'fileSenderId': fileModel.userId ?? null,
-      //   'fileParentId': fileModel.parentId ?? null,
-      //   'fileId': fileModel.fileId ?? null,
-      //   'fileName': fileModel.fileName ?? null,
-      //   'fileGlobalRef': fileModel.globalRef ?? null,
-      //   'fileDownloadLink': fileModel.fileDownloadLink ?? null,
-      //   'fileCreatedAt': fileModel.createdAt ?? null,
-      // });
-
-      // await shareRef
-      //     .reference()
-      //     .child('shared')
-      //     .child('users')
-      //     .child(receiverId)
-      //     .child('received')
-      //     .child(userID)
-      //     // .reference()
-      //     // // .reference()
-      //     // .child(receiverId)
-      //     .set({
-      //   'receiverEmailId': receiverEmailId,
-      //   'folderSenderId': folderModel.userId ?? null,
-      //   'folderId': folderModel.folderId ?? null,
-      //   'folderParentId': folderModel.parentId ?? null,
-      //   'folderDocumentType': folderModel.documentType ?? null,
-      //   'folderGlobalRef': folderModel.globalRef.toString() ?? null,
-      //   'folderName': folderModel.folderName ?? null,
-      //   'folderCreatedAt': folderModel.createdAt ?? null,
-      //   'fileSenderId': fileModel.userId ?? null,
-      //   'fileParentId': fileModel.parentId ?? null,
-      //   'fileId': fileModel.fileId ?? null,
-      //   'fileName': fileModel.fileName ?? null,
-      //   'fileGlobalRef': fileModel.globalRef ?? null,
-      //   'fileDownloadLink': fileModel.fileDownloadLink ?? null,
-      //   'fileCreatedAt': fileModel.createdAt ?? null,
-      // });
-      print("finsihed");
     } else
       debugPrint('receievr id not found');
   }

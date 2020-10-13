@@ -1,6 +1,5 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,16 +31,7 @@ class AuthenticationService {
       User user = result.user;
       await DatabaseService(
         userID: user.uid,
-
-        // globalRef:
-        //     databaseReference.child('users').child(user.uid).reference()
-      )
-          // .createFolder(
-          //     documentType: documentType.folder,
-          //     folderName: user.email,
-          //     parentId: user.uid);
-
-          .updateUserData(
+      ).updateUserData(
         folderName: user.email,
       );
       return _userfromAuthentication(user);
@@ -60,8 +50,6 @@ class AuthenticationService {
       User user = result.user;
       DatabaseService(
         userID: user.uid,
-
-        // globalRef: databaseReference.reference()
       );
 
       return _userfromAuthentication(user);

@@ -14,12 +14,6 @@ shareWithPopUp(
   FileModel fileModel,
   String documentSenderId,
   documentType documentType,
-  // String docId,
-  // DatabaseReference yourRef,
-  // String docName,
-  // String userId,
-  // String senderEmailId,
-  // documentType documentType
 }) {
   TextEditingController _sharerControllerName = new TextEditingController();
   GlobalKey<FormState> _sharerKeyName = new GlobalKey<FormState>();
@@ -66,25 +60,12 @@ shareWithPopUp(
               onPressed: () async {
                 if (_sharerKeyName.currentState.validate()) {
                   await DatabaseService(
-                    // userID: folderModel.userId,
-
-                    // userID: folderModel.userId ?? fileModel.userId,
-                    // userID: fileModel.userId,
-
                     userID: documentSenderId ?? _userModel.uid,
-
-                    // driveRef: folderModel.globalRef
                   ).shareWith(
                     docType: documentType,
                     receiverEmailId: _sharerControllerName.text,
                     folderModel: folderModel ?? null,
                     fileModel: fileModel ?? null,
-
-                    // docId: docId,
-                    // sharePath: yourRef,
-                    // docName: docName,
-                    // senderEmailId: senderEmailId,
-                    // documentType: documentType
                   );
                   Navigator.pop(context);
                 }

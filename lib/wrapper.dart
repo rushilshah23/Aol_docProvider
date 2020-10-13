@@ -13,8 +13,6 @@ class Wrapper extends StatelessWidget {
     if (user == null) {
       return Authenticate();
     } else {
-      // globalPath =
-
       return DrivePage(
         uid: user.uid,
         pid: user.uid,
@@ -26,21 +24,6 @@ class Wrapper extends StatelessWidget {
             .child('documentManager')
             .reference()
             .path,
-
-        // globalRef
-        //     .reference()
-        //     .child('users')
-        //     .child(user.uid)
-        //     .child('documentManager'),
-
-        // .reference(),
-
-        // .child('users')
-        // .child(user.uid)
-        // .child('documentManager')
-        // .reference(),
-        // folderPath: "${user.userEmail}/",
-        // realFolderPath: "users/${user.uid}/documentManager/",
         folderName: user.userEmail,
       );
     }

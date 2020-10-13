@@ -3,10 +3,8 @@ import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/popUps.dart';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -16,32 +14,10 @@ import 'package:share/share.dart';
 class FileCard extends StatefulWidget {
   final FileModel fileModel;
   final dynamic documentSenderId;
-  // final dynamic userId;
-  // final dynamic parentId;
-  // final dynamic fileId;
-  // final dynamic fileName;
-  // final DatabaseReference globalRef;
-  // // final dynamic filePath;
-  // // final dynamic realFilePath;
-  // final dynamic documentType;
-  // final dynamic fileDownloadLink;
-  // // final dynamic fileSize;
-  // final dynamic createdAt;
-  // // final dynamic modifiedAt;
 
   FileCard({
     this.fileModel,
     this.documentSenderId,
-    // this.userId,
-    // this.parentId,
-    // this.fileId,
-    // this.fileName,
-    // this.globalRef,
-    // // this.filePath,
-    // // this.realFilePath,
-    // this.documentType,
-    // this.fileDownloadLink,
-    // this.createdAt
   });
   @override
   _FileCardState createState() => _FileCardState();
@@ -55,7 +31,7 @@ class _FileCardState extends State<FileCard> {
   var userModelVar;
   FirebaseDatabase _folderDatabase = FirebaseDatabase.instance;
   DatabaseReference _folderRef;
-  String _folderRefPath;
+  // String _folderRefPath;
 
   void initState() {
     _folderRef = _folderDatabase
@@ -64,7 +40,7 @@ class _FileCardState extends State<FileCard> {
         .reference()
         .child(widget.fileModel.fileId);
 
-    _folderRefPath = _folderRef.path;
+    // _folderRefPath = _folderRef.path;
     // widget.folderModel.globalRef.reference().child(widget.folderModel.folderId)
     userModelVar = Provider.of<UserModel>(context, listen: false);
     super.initState();

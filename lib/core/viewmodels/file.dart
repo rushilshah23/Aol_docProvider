@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 class FileCard extends StatefulWidget {
   final FileModel fileModel;
@@ -261,13 +262,22 @@ class _FileCardState extends State<FileCard> {
     );
   }
 
+  externalShare(BuildContext context, FileModel fileModel) {
+    final String text = fileModel.fileName.toString();
+    final String subject = fileModel.fileDownloadLink.toString();
+    final RenderBox box = context.findRenderObject();
+    Share.share(text,
+        subject: subject,
+        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  }
+
   void fileOptions(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (context) {
           return Container(
             color: Color(0xFF737373),
-            height: 230,
+            height: 280,
             child: Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).canvasColor,
@@ -323,6 +333,16 @@ class _FileCardState extends State<FileCard> {
                         focusNode: _focusNode,
                       );
                       // Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.send, color: Colors.black),
+                    title: Text("External Share"),
+                    onTap: () {
+                      Share.share(widget.fileModel.fileDownloadLink.toString(),
+                          subject: widget.fileModel.fileName.toString());
+                      Navigator.pop(context);
+                      // externalShare(context, widget.fileModel);
                     },
                   ),
                 ],

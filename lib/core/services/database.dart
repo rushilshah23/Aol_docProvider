@@ -91,7 +91,7 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    await driveRef.reference().child(folderId).update({
+    await driveRef.child(folderId).reference().update({
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -169,7 +169,7 @@ class DatabaseService {
   }) async {
     try {
       print("before folder deleted ${driveRef.path}/$folderId");
-      await driveRef.child(folderId).reference().remove();
+      await driveRef.child(folderId).reference().parent().remove();
       print("after folder deleted ${driveRef.path}/$folderId");
     } catch (e) {
       debugPrint(e.toString());

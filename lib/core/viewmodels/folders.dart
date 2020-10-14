@@ -39,6 +39,7 @@ class _FolderCardState extends State<FolderCard> {
         .child(widget.folderModel.globalRef)
         .reference();
     // .child(widget.folderModel.folderId);
+    // .reference();
 
     _folderRefPath = _folderRef.path;
     // widget.folderModel.globalRef.reference().child(widget.folderModel.folderId)
@@ -63,6 +64,12 @@ class _FolderCardState extends State<FolderCard> {
             actions: [
               FlatButton(
                   color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.black))),
+              FlatButton(
+                  color: Colors.white,
                   onPressed: () async {
                     DatabaseService(
 
@@ -73,7 +80,7 @@ class _FolderCardState extends State<FolderCard> {
                         .deleteFolder(
                       folderId: widget.folderModel.folderId,
                       driveRef: _folderRef,
-                      //  widget.folderModel.globalRef,
+                      // widget.folderModel.globalRef,
 
                       // folderName: widget.folderName,
                     );
@@ -83,12 +90,6 @@ class _FolderCardState extends State<FolderCard> {
                     "Yes",
                     style: TextStyle(color: Colors.red),
                   )),
-              FlatButton(
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Cancel", style: TextStyle(color: Colors.black)))
             ],
           );
         });
@@ -146,6 +147,15 @@ class _FolderCardState extends State<FolderCard> {
           ),
           actions: [
             FlatButton(
+                onPressed: () {
+                  _renameFolderController.clear();
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                )),
+            FlatButton(
                 color: Colors.white,
                 onPressed: () async {
                   if (_renameFolderKey.currentState.validate()) {
@@ -155,7 +165,9 @@ class _FolderCardState extends State<FolderCard> {
                         .renameFolder(
                             folderId: widget.folderModel.folderId,
                             newFolderName: _renameFolderController.text,
-                            driveRef: _folderRef);
+                            driveRef:
+                                // widget.folderModel.globalRef);
+                                _folderRef);
                     _renameFolderController.clear();
                     Navigator.pop(context);
                   }
@@ -164,15 +176,6 @@ class _FolderCardState extends State<FolderCard> {
                   "Rename",
                   style: TextStyle(color: Color(0xFF02DEED)),
                 )),
-            FlatButton(
-                onPressed: () {
-                  _renameFolderController.clear();
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.black),
-                ))
           ],
         );
       },
@@ -251,6 +254,11 @@ class _FolderCardState extends State<FolderCard> {
                     size: 70,
                   ),
                   onPressed: () {
+                    _folderRef = _folderRef
+                        .child(widget.folderModel.folderId)
+                        .reference();
+
+                    _folderRefPath = _folderRef.path;
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return DrivePage(
@@ -258,6 +266,8 @@ class _FolderCardState extends State<FolderCard> {
                         uid: widget.folderModel.userId,
                         folderId: widget.folderModel.folderId,
                         ref: _folderRefPath,
+                        // ref: widget.folderModel.globalRef,
+
                         folderName: widget.folderModel.folderName,
                       );
                     }));

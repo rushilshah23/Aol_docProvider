@@ -23,6 +23,13 @@ class _SignUpState extends State<SignUp> {
       new TextEditingController();
   String error = '';
 
+  void initState() {
+    super.initState();
+    _emailHomePageController.clear();
+    _passwordHomePageConroller1.clear();
+    _passwordHomePageConroller2.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLoading
@@ -71,9 +78,9 @@ class _SignUpState extends State<SignUp> {
                       ),
                       textFieldWidget(
                           controller: _passwordHomePageConroller2,
-                          hintText: "Enter your password",
+                          hintText: "Renter your password",
                           validateFunction: passwordValidator,
-                          labelText: "Password",
+                          labelText: " Confirm Password",
                           obscure: true),
                       SizedBox(
                         height: 16,
@@ -102,6 +109,11 @@ class _SignUpState extends State<SignUp> {
                                     // Scaffold.of(context).showSnackBar(SnackBar(
                                     //     content: Text("invalid email or password")));
                                   } else {
+                                    // setState(() {
+                                    //   _passwordHomePageConroller1.clear();
+                                    //   _passwordHomePageConroller2.clear();
+                                    //   _emailHomePageController.clear();
+                                    // });
                                     debugPrint(value.uid);
                                   }
                                 });
@@ -131,8 +143,7 @@ class _SignUpState extends State<SignUp> {
                                     TextSpan(
                                         text: ' Sign In',
                                         style: TextStyle(
-                                            color: Colors.blue,
-                                            fontSize: 18),
+                                            color: Colors.blue, fontSize: 18),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () {
                                             widget.toggleView();

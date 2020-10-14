@@ -44,15 +44,20 @@ class _DrivePageState extends State<DrivePage> {
   final FirebaseDatabase db = FirebaseDatabase.instance;
 
   void initState() {
-    driveRef = db
-        .reference()
-        .child(widget.ref)
-        .reference()
-        .child(widget.folderId)
-        .reference();
+    // driveRef =
+    //     db.reference().child(widget.ref).reference().child(widget.folderId);
+    // .reference();
 
-    filesCard.clear();
-    foldersCard.clear();
+    // driveRef =
+    //     db.reference().child(widget.ref).reference().child(widget.folderId);
+
+    driveRef =
+        db.reference().child(widget.ref).reference().child(widget.folderId);
+    print(" in drive ${driveRef.path}");
+    // .reference();
+
+    // filesCard.clear();
+    // foldersCard.clear();
 
     super.initState();
     _focusNode.addListener(() {
@@ -73,25 +78,29 @@ class _DrivePageState extends State<DrivePage> {
           var keys = snapshot.value.keys;
           foldersCard.clear();
 
-          if (keys != 0) {
+          if (keys != null) {
             for (var key in keys) {
+              // print(key);
               if ((data[key]['documentType']) == 'documentType.folder') {
-                if (data[key]['parentId'] == widget.folderId) {
-                  setState(() {
-                    FolderModel folderCard = new FolderModel(
-                      globalRef: data[key]['globalRef'] ?? '',
-                      userId: data[key]['userId'] ?? '',
-                      parentId: data[key]['parentId'] ?? '',
-                      folderId: data[key]['folderId'] ?? '',
-                      folderName: data[key]['folderName'] ?? '',
-                      createdAt: data[key]['createdAt'] ?? '',
-                      documentType: data[key]['documentType'] ?? '',
-                    );
-                    foldersCard.add(FolderCard(
-                      folderModel: folderCard,
-                    ));
-                  });
-                }
+                // if (data[key]['parentId'] == widget.folderId) {
+                setState(() {
+                  // print("saving foldercards");
+                  FolderModel folderCard = new FolderModel(
+                    globalRef: data[key]['globalRef'] ?? '',
+                    // globalRef: driveRef.reference().path ?? '',
+
+                    userId: data[key]['userId'] ?? '',
+                    parentId: data[key]['parentId'] ?? '',
+                    folderId: data[key]['folderId'] ?? '',
+                    folderName: data[key]['folderName'] ?? '',
+                    createdAt: data[key]['createdAt'] ?? '',
+                    documentType: data[key]['documentType'] ?? '',
+                  );
+                  foldersCard.add(FolderCard(
+                    folderModel: folderCard,
+                  ));
+                });
+                // }
               }
             }
           }
@@ -112,7 +121,7 @@ class _DrivePageState extends State<DrivePage> {
         var keys = snapshot.value.keys;
         filesCard.clear();
         try {
-          if (keys != 0) {
+          if (keys != null) {
             for (var key in keys) {
               if ((data[key]['documentType']) == 'documentType.file') {
                 if (data[key]['parentId'] == widget.folderId) {
@@ -243,6 +252,14 @@ class _DrivePageState extends State<DrivePage> {
           ),
           actions: [
             FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                )),
+            FlatButton(
                 onPressed: () async {
                   if (_folderNameKey.currentState.validate()) {
                     await DatabaseService(userID: widget.uid).createFolder(
@@ -260,14 +277,6 @@ class _DrivePageState extends State<DrivePage> {
                   "Create",
                   style: TextStyle(color: Color(0xFF02DEED)),
                 )),
-            FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.black),
-                ))
           ],
         );
       },
@@ -327,12 +336,12 @@ class _DrivePageState extends State<DrivePage> {
         });
   }
 
-  Future<bool> gobackFolder() async {
-    setState(() {
-      driveRef.parent().reference();
-    });
-    return true;
-  }
+  // Future<bool> gobackFolder() async {
+  //   setState(() {
+  //     driveRef.parent().reference();
+  //   });
+  //   return true;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -373,55 +382,64 @@ class _DrivePageState extends State<DrivePage> {
                   ),
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,
-                  body: WillPopScope(
-                    onWillPop: gobackFolder,
-                    child: foldersCard.length != 0 || filesCard.length != 0
-                        ? ListView(children: [
-                            foldersCard.length != 0 || filesCard.length != 0
-                                ? GridView.builder(
-                                    physics: ScrollPhysics(),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: (foldersCard.length +
-                                            filesCard.length) ??
-                                        0,
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2),
-                                    itemBuilder: (_, index) {
-                                      return index < foldersCard.length
-                                          // &&  index >= 0
-                                          ? foldersCard[index]
-                                          : filesCard[
-                                              index - foldersCard.length];
-                                    })
-                                : Center(
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.fromLTRB(50, 300, 50, 200),
-                                      child: Text(
-                                        'No Items',
-                                        style: TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.bold,
-                                            color: appColor),
+                  body:
+                      //  WillPopScope(
+                      //   onWillPop: gobackFolder,
+                      //   child:
+                      foldersCard.length != 0 || filesCard.length != 0
+                          ? ListView(children: [
+                              foldersCard.length != 0 || filesCard.length != 0
+                                  ? GridView.builder(
+                                      physics: ScrollPhysics(),
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: (foldersCard.length +
+                                              filesCard.length) ??
+                                          0,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2),
+                                      itemBuilder: (_, index) {
+                                        // print(
+                                        //     "length is  ${foldersCard.length + filesCard.length}");
+                                        // print(
+                                        //     "foldercard length is ${foldersCard.length}");
+                                        // print(
+                                        //     "filecard length is ${filesCard.length}");
+                                        return index < foldersCard.length
+                                            // &&  index >= 0
+                                            ? foldersCard[index]
+                                            : filesCard[
+                                                index - foldersCard.length];
+                                      })
+                                  : Center(
+                                      child: Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            50, 300, 50, 200),
+                                        child: Text(
+                                          'No Items',
+                                          style: TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold,
+                                              color: appColor),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                          ])
-                        : Center(
-                            child: Container(
-                              padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
-                              child: Text(
-                                'No Items',
-                                style: TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: appColor),
+                                    )
+                            ])
+                          : Center(
+                              child: Container(
+                                padding: EdgeInsets.fromLTRB(50, 300, 50, 200),
+                                child: Text(
+                                  'No Items',
+                                  style: TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.bold,
+                                      color: appColor),
+                                ),
                               ),
                             ),
-                          ),
-                  ))
+                  // )
+                )
               : Loading();
         });
   }

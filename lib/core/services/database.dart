@@ -49,7 +49,7 @@ class DatabaseService {
     var newKey = driveRef.reference().push().key;
     print(newKey);
 
-    await driveRef.child(newKey).set({
+    await driveRef.child('inFolders').child(newKey).set({
       'userId': userID,
       'parentId': parentId,
       'folderId': newKey,
@@ -70,11 +70,13 @@ class DatabaseService {
 
     var newKey = driveRef.reference().push().key;
 
-    StorageUploadTask uploadTask =
-        _dbStorage.child(driveRef.reference().path).child(newKey).putFile(file);
+    StorageUploadTask uploadTask = _dbStorage
+        .child(driveRef.child('inFolders').reference().path)
+        .child(newKey)
+        .putFile(file);
     String url = await (await uploadTask.onComplete).ref.getDownloadURL();
 
-    await driveRef.child(newKey).set({
+    await driveRef.child('inFolders').child(newKey).set({
       'userId': userID,
       'parentId': parentId,
       'fileId': newKey,
@@ -169,7 +171,7 @@ class DatabaseService {
   }) async {
     try {
       print("before folder deleted ${driveRef.path}/$folderId");
-      await driveRef.child(folderId).reference().parent().remove();
+      await driveRef.child(folderId).reference().remove();
       print("after folder deleted ${driveRef.path}/$folderId");
     } catch (e) {
       debugPrint(e.toString());

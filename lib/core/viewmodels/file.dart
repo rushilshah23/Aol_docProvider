@@ -37,6 +37,7 @@ class _FileCardState extends State<FileCard> {
     _folderRef = _folderDatabase
         .reference()
         .child(widget.fileModel.globalRef)
+        .child('inFolders')
         .reference();
     // .child(widget.fileModel.fileId);
 
@@ -119,6 +120,12 @@ class _FileCardState extends State<FileCard> {
             actions: [
               FlatButton(
                   color: Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.black))),
+              FlatButton(
+                  color: Colors.white,
                   onPressed: () async {
                     DatabaseService(
                       userID:
@@ -137,12 +144,6 @@ class _FileCardState extends State<FileCard> {
                     "Yes",
                     style: TextStyle(color: Colors.red),
                   )),
-              FlatButton(
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("Cancel", style: TextStyle(color: Colors.black)))
             ],
           );
         });
@@ -203,6 +204,16 @@ class _FileCardState extends State<FileCard> {
           ),
           actions: [
             FlatButton(
+                color: Colors.white,
+                onPressed: () {
+                  _renameFileController.clear();
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.black),
+                )),
+            FlatButton(
               color: Colors.white,
               onPressed: () async {
                 if (_renameFileKey.currentState.validate()) {
@@ -222,16 +233,6 @@ class _FileCardState extends State<FileCard> {
               },
               child: Text("Rename", style: TextStyle(color: Color(0xFF02DEED))),
             ),
-            FlatButton(
-                color: Colors.white,
-                onPressed: () {
-                  _renameFileController.clear();
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.black),
-                ))
           ],
         );
       },
@@ -344,6 +345,7 @@ class _FileCardState extends State<FileCard> {
                 icon: FaIcon(
                   FontAwesomeIcons.solidFileAlt,
                   size: 60,
+                  color: cardColor,
                 ),
                 onPressed: () async {
                   await _launchURL(widget.fileModel.fileDownloadLink);

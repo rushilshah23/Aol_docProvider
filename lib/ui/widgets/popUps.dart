@@ -56,6 +56,15 @@ shareWithPopUp(
         ),
         actions: [
           FlatButton(
+              onPressed: () {
+                _sharerControllerName.clear();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.black),
+              )),
+          FlatButton(
               color: Colors.white,
               onPressed: () async {
                 if (_sharerKeyName.currentState.validate()) {
@@ -74,15 +83,6 @@ shareWithPopUp(
                 "Share",
                 style: TextStyle(color: Color(0xFF02DEED)),
               )),
-          FlatButton(
-              onPressed: () {
-                _sharerControllerName.clear();
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(color: Colors.black),
-              ))
         ],
       );
     },

@@ -48,11 +48,14 @@ class _DrivePageState extends State<DrivePage> {
     //     db.reference().child(widget.ref).reference().child(widget.folderId);
     // .reference();
 
-    // driveRef =
-    //     db.reference().child(widget.ref).reference().child(widget.folderId);
+    // driveRef = db.reference().child(widget.ref).reference();
 
-    driveRef =
-        db.reference().child(widget.ref).reference().child(widget.folderId);
+    driveRef = db
+        .reference()
+        .child(widget.ref)
+        .reference()
+        .child(widget.folderId)
+        .reference();
     print(" in drive ${driveRef.path}");
     // .reference();
 
@@ -70,7 +73,7 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   Future<List<FolderCard>> getFoldersList() async {
-    await driveRef.once().then((DataSnapshot snapshot) {
+    await driveRef.child('inFolders').once().then((DataSnapshot snapshot) {
       foldersCard.clear();
       if (snapshot.value != null) {
         try {
@@ -114,7 +117,7 @@ class _DrivePageState extends State<DrivePage> {
   }
 
   Future<List<FileCard>> getFilesList() async {
-    await driveRef.once().then((DataSnapshot snapshot) {
+    await driveRef.child('inFolders').once().then((DataSnapshot snapshot) {
       filesCard.clear();
       if (snapshot.value != null) {
         var data = snapshot.value;
@@ -361,6 +364,7 @@ class _DrivePageState extends State<DrivePage> {
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(
+                      backgroundColor: appBarColor,
                       title: AutoSizeText(
                         widget.folderName,
                         overflow: TextOverflow.visible,
@@ -378,7 +382,6 @@ class _DrivePageState extends State<DrivePage> {
                     onPressed: () {
                       return driveOptions(context);
                     },
-                    backgroundColor: appColor,
                   ),
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,

@@ -37,6 +37,7 @@ class _FolderCardState extends State<FolderCard> {
     _folderRef = _folderDatabase
         .reference()
         .child(widget.folderModel.globalRef)
+        .child('inFolders')
         .reference();
     // .child(widget.folderModel.folderId);
     // .reference();
@@ -210,8 +211,8 @@ class _FolderCardState extends State<FolderCard> {
                     leading: Icon(Icons.label, color: Colors.black),
                     title: Text("Rename Folder"),
                     onTap: () {
+                      Navigator.pop(context);
                       renameFolderPopUp(context);
-                      // Navigator.pop(context);
                     },
                   ),
                   ListTile(
@@ -253,9 +254,11 @@ class _FolderCardState extends State<FolderCard> {
                     Icons.folder,
                     size: 70,
                   ),
+                  color: cardColor,
                   onPressed: () {
                     _folderRef = _folderRef
-                        .child(widget.folderModel.folderId)
+                        // .child('inFolders')
+                        //     .child(widget.folderModel.folderId)
                         .reference();
 
                     _folderRefPath = _folderRef.path;

@@ -44,8 +44,15 @@ class _DrivePageState extends State<DrivePage> {
   final FirebaseDatabase db = FirebaseDatabase.instance;
 
   void initState() {
-    driveRef =
-        db.reference().child(widget.ref).reference().child(widget.folderId);
+    driveRef = db
+        .reference()
+        .child(widget.ref)
+        .reference()
+        .child(widget.folderId)
+        .reference();
+
+    filesCard.clear();
+    foldersCard.clear();
 
     super.initState();
     _focusNode.addListener(() {
@@ -69,21 +76,22 @@ class _DrivePageState extends State<DrivePage> {
           if (keys != 0) {
             for (var key in keys) {
               if ((data[key]['documentType']) == 'documentType.folder') {
-                // if (data[key]['parentId'] == widget.folderId) {
-                setState(() {
-                  FolderModel folderCard = new FolderModel(
-                    globalRef: data[key]['globalRef'] ?? '',
-                    userId: data[key]['userId'] ?? '',
-                    parentId: data[key]['parentId'] ?? '',
-                    folderId: data[key]['folderId'] ?? '',
-                    folderName: data[key]['folderName'] ?? '',
-                    createdAt: data[key]['createdAt'] ?? '',
-                    documentType: data[key]['documentType'] ?? '',
-                  );
-                  foldersCard.add(FolderCard(
-                    folderModel: folderCard,
-                  ));
-                });
+                if (data[key]['parentId'] == widget.folderId) {
+                  setState(() {
+                    FolderModel folderCard = new FolderModel(
+                      globalRef: data[key]['globalRef'] ?? '',
+                      userId: data[key]['userId'] ?? '',
+                      parentId: data[key]['parentId'] ?? '',
+                      folderId: data[key]['folderId'] ?? '',
+                      folderName: data[key]['folderName'] ?? '',
+                      createdAt: data[key]['createdAt'] ?? '',
+                      documentType: data[key]['documentType'] ?? '',
+                    );
+                    foldersCard.add(FolderCard(
+                      folderModel: folderCard,
+                    ));
+                  });
+                }
               }
             }
           }
@@ -107,24 +115,24 @@ class _DrivePageState extends State<DrivePage> {
           if (keys != 0) {
             for (var key in keys) {
               if ((data[key]['documentType']) == 'documentType.file') {
-                // if (data[key]['parentId'] == widget.folderId) {
-                setState(() {
-                  FileModel fileCard = new FileModel(
-                    globalRef: data[key]['globalRef'] ?? '',
-                    // globalRef: driveRef.path,
-                    userId: data[key]['userId'] ?? '',
-                    parentId: data[key]['parentId'] ?? '',
-                    fileId: data[key]['fileId'] ?? '',
-                    fileName: data[key]['fileName'] ?? '',
-                    createdAt: data[key]['createdAt'] ?? '',
-                    documentType: data[key]['documentType'] ?? '',
-                    fileDownloadLink: data[key]['fileDownloadLink'] ?? '',
-                  );
-                  filesCard.add(FileCard(
-                    fileModel: fileCard,
-                  ));
-                });
-                // }
+                if (data[key]['parentId'] == widget.folderId) {
+                  setState(() {
+                    FileModel fileCard = new FileModel(
+                      globalRef: data[key]['globalRef'] ?? '',
+                      // globalRef: driveRef.path,
+                      userId: data[key]['userId'] ?? '',
+                      parentId: data[key]['parentId'] ?? '',
+                      fileId: data[key]['fileId'] ?? '',
+                      fileName: data[key]['fileName'] ?? '',
+                      createdAt: data[key]['createdAt'] ?? '',
+                      documentType: data[key]['documentType'] ?? '',
+                      fileDownloadLink: data[key]['fileDownloadLink'] ?? '',
+                    );
+                    filesCard.add(FileCard(
+                      fileModel: fileCard,
+                    ));
+                  });
+                }
               }
             }
           }

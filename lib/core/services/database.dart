@@ -91,7 +91,7 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    await driveRef.reference().update({
+    await driveRef.reference().child(folderId).update({
       'folderName': newFolderName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -168,13 +168,18 @@ class DatabaseService {
     DatabaseReference driveRef,
   }) async {
     try {
-      await driveRef.reference().remove();
+      print("before folder deleted ${driveRef.path}/$folderId");
+      await driveRef.child(folderId).reference().remove();
+      print("after folder deleted ${driveRef.path}/$folderId");
     } catch (e) {
       debugPrint(e.toString());
     }
 
     try {
-      await _dbStorage.child(driveRef.reference().path).delete();
+      await _dbStorage
+          .child(driveRef.reference().path)
+          .child(folderId)
+          .delete();
     } catch (e) {
       print(e.toString());
     }
@@ -298,7 +303,7 @@ class DatabaseService {
   Future renameFile(
       {String newFileName, String fileId, DatabaseReference driveRef}) async {
     // await driveRef.reference().child(fileId).update({
-    await driveRef.reference().update({
+    await driveRef.reference().child(fileId).update({
       'fileName': newFileName,
       'modifiedAt': Timestamp.now().toDate().toIso8601String(),
     });
@@ -372,10 +377,10 @@ class DatabaseService {
 
   Future deleteFile(
       {String fileName, String fileId, DatabaseReference driveRef}) async {
-    await driveRef.reference().remove();
+    await driveRef.reference().child(fileId).remove();
     print("delete path ${driveRef.path}");
 
-    await _dbStorage.child(driveRef.reference().path).delete();
+    await _dbStorage.child(driveRef.reference().path).child(fileId).delete();
 
     // AT SHARED SECTION
     String receiverId;

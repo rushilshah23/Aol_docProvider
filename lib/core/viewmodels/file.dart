@@ -37,8 +37,8 @@ class _FileCardState extends State<FileCard> {
     _folderRef = _folderDatabase
         .reference()
         .child(widget.fileModel.globalRef)
-        .reference()
-        .child(widget.fileModel.fileId);
+        .reference();
+    // .child(widget.fileModel.fileId);
 
     // _folderRefPath = _folderRef.path;
     // widget.folderModel.globalRef.reference().child(widget.folderModel.folderId)

@@ -167,7 +167,11 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    await driveRef.reference().remove();
+    try {
+      await driveRef.reference().remove();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     try {
       await _dbStorage.child(driveRef.reference().path).delete();
@@ -228,63 +232,67 @@ class DatabaseService {
     FirebaseDatabase _fbdb = FirebaseDatabase.instance;
     DatabaseReference _db = _fbdb.reference();
     print("at send end $userID");
-    await _db
-        .reference()
-        .child('shared')
-        .child('users')
-        .child(userID)
-        .child('send')
-        .reference()
-        .once()
-        .then((DataSnapshot snapshot) async {
-      if (snapshot.value != null) {
-        var keys = snapshot.value.keys;
-        for (var key in keys) {
-          await _db
-              .reference()
-              .child('shared')
-              .child('users')
-              .child(userID)
-              .child('send')
-              .child(key)
-              .reference()
-              .once()
-              .then((DataSnapshot snapshot) async {
-            if (snapshot.value != null) {
-              var keys = snapshot.value.keys;
-              for (var key2 in keys) {
-                if (key2 == folderId) {
-                  receiverId = key;
-                  print(receiverId);
-                  await _db
-                      .reference()
-                      .child('shared')
-                      .child('users')
-                      .child(receiverId)
-                      .child('received')
-                      .child(userID)
-                      // .child(key)
-                      .reference()
-                      .child(key2)
-                      .remove()
-                      .then((_) async {
+    try {
+      await _db
+          .reference()
+          .child('shared')
+          .child('users')
+          .child(userID)
+          .child('send')
+          .reference()
+          .once()
+          .then((DataSnapshot snapshot) async {
+        if (snapshot.value != null) {
+          var keys = snapshot.value.keys;
+          for (var key in keys) {
+            await _db
+                .reference()
+                .child('shared')
+                .child('users')
+                .child(userID)
+                .child('send')
+                .child(key)
+                .reference()
+                .once()
+                .then((DataSnapshot snapshot) async {
+              if (snapshot.value != null) {
+                var keys = snapshot.value.keys;
+                for (var key2 in keys) {
+                  if (key2 == folderId) {
+                    receiverId = key;
+                    print(receiverId);
                     await _db
                         .reference()
                         .child('shared')
                         .child('users')
-                        .child(userID)
-                        .child('send')
                         .child(receiverId)
-                        .child(folderId)
-                        .remove();
-                  });
+                        .child('received')
+                        .child(userID)
+                        // .child(key)
+                        .reference()
+                        .child(key2)
+                        .remove()
+                        .then((_) async {
+                      await _db
+                          .reference()
+                          .child('shared')
+                          .child('users')
+                          .child(userID)
+                          .child('send')
+                          .child(receiverId)
+                          .child(folderId)
+                          .remove();
+                    });
+                  }
                 }
               }
-            }
-          });
+            });
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   Future renameFile(

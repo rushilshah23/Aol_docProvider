@@ -169,6 +169,8 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
+    // deleteFolderFromdbStorage(driveRef: driveRef, folderId: folderId);
+
     try {
       print("before folder deleted ${driveRef.path}/$folderId");
       await driveRef.child(folderId).reference().remove();
@@ -300,6 +302,22 @@ class DatabaseService {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  deleteFolderFromdbStorage(
+      {DatabaseReference driveRef, String folderId}) async {
+    await driveRef.child(folderId).once().then((DataSnapshot snapshot) {
+      if (snapshot != null) {
+        var data = snapshot.value;
+        var keys = snapshot.value.keys;
+        for (var key in keys) {
+          if (data['inFolders'] != null) {
+            print("inFOlders " + data['inFolders']);
+          }
+        }
+      }
+    });
+    // await _dbStorage.child(driveRef.reference().path).child(folderId).delete();
   }
 
   Future renameFile(
@@ -527,120 +545,122 @@ class DatabaseService {
   }
 
   shareWith({
-    @required String receiverEmailId,
+    @required List<String> receiverEmailId,
     FolderModel folderModel,
     FileModel fileModel,
     @required documentType docType,
   }) async {
-    print("in share with");
-    FirebaseDatabase _fbdb = FirebaseDatabase.instance;
-    DatabaseReference _db = _fbdb.reference();
-    var receiverId = await getuserIdfromEmailId(emailId: receiverEmailId);
+    for (var i = 0; i < receiverEmailId.length; i++) {
+      print("in share with");
+      FirebaseDatabase _fbdb = FirebaseDatabase.instance;
+      DatabaseReference _db = _fbdb.reference();
+      var receiverId = await getuserIdfromEmailId(emailId: receiverEmailId[i]);
 
-    if (receiverId != null) {
-      print('before push');
-      _db
-          .reference()
-          .child('shared')
-          .child('users')
-          .child(userID)
-          .child('send')
-          .child(receiverId)
-          .push()
-          .key;
-      print('after push');
-
-      if (docType == documentType.folder) {
-        await _db
+      if (receiverId != null) {
+        print('before push');
+        _db
             .reference()
             .child('shared')
             .child('users')
             .child(userID)
             .child('send')
             .child(receiverId)
-            .child(folderModel.folderId)
-            .reference()
-            .set({
-          'receiverEmailId': receiverEmailId,
-          'documentSenderId': folderModel.userId ?? null,
-          'documentReceiverId': receiverId ?? null,
-          'folderId': folderModel.folderId ?? null,
-          'folderParentId': folderModel.parentId ?? null,
-          'documentType': folderModel.documentType ?? null,
-          'folderGlobalRef': folderModel.globalRef.toString() ?? null,
-          'folderName': folderModel.folderName ?? null,
-          'folderCreatedAt': folderModel.createdAt ?? null,
-        });
-        print('surpassed');
+            .push()
+            .key;
+        print('after push');
 
-        await _db
-            .reference()
-            .child('shared')
-            .child('users')
-            .child(receiverId)
-            .child('received')
-            .child(userID)
-            .child(folderModel.folderId)
-            .reference()
-            .set({
-          'receiverEmailId': receiverEmailId,
-          'documentSenderId': folderModel.userId ?? null,
-          'documentReceiverId': receiverId ?? null,
-          'folderId': folderModel.folderId ?? null,
-          'folderParentId': folderModel.parentId ?? null,
-          'documentType': folderModel.documentType ?? null,
-          'folderGlobalRef': folderModel.globalRef.toString() ?? null,
-          'folderName': folderModel.folderName ?? null,
-          'folderCreatedAt': folderModel.createdAt ?? null,
-        });
-      }
+        if (docType == documentType.folder) {
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(userID)
+              .child('send')
+              .child(receiverId)
+              .child(folderModel.folderId)
+              .reference()
+              .set({
+            'receiverEmailId': receiverEmailId,
+            'documentSenderId': folderModel.userId ?? null,
+            'documentReceiverId': receiverId ?? null,
+            'folderId': folderModel.folderId ?? null,
+            'folderParentId': folderModel.parentId ?? null,
+            'documentType': folderModel.documentType ?? null,
+            'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+            'folderName': folderModel.folderName ?? null,
+            'folderCreatedAt': folderModel.createdAt ?? null,
+          });
+          print('surpassed');
 
-      if (docType == documentType.file) {
-        await _db
-            .reference()
-            .child('shared')
-            .child('users')
-            .child(userID)
-            .child('send')
-            .child(receiverId)
-            .child(fileModel.fileId)
-            .reference()
-            .set({
-          'receiverEmailId': receiverEmailId,
-          'fileSenderId': fileModel.userId ?? null,
-          'fileParentId': fileModel.parentId ?? null,
-          'fileId': fileModel.fileId ?? null,
-          'fileName': fileModel.fileName ?? null,
-          'fileGlobalRef': fileModel.globalRef ?? null,
-          'fileDownloadLink': fileModel.fileDownloadLink ?? null,
-          'fileCreatedAt': fileModel.createdAt ?? null,
-          'documentType': fileModel.documentType ?? null,
-          'documentSenderId': fileModel.userId ?? null,
-        });
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(receiverId)
+              .child('received')
+              .child(userID)
+              .child(folderModel.folderId)
+              .reference()
+              .set({
+            'receiverEmailId': receiverEmailId,
+            'documentSenderId': folderModel.userId ?? null,
+            'documentReceiverId': receiverId ?? null,
+            'folderId': folderModel.folderId ?? null,
+            'folderParentId': folderModel.parentId ?? null,
+            'documentType': folderModel.documentType ?? null,
+            'folderGlobalRef': folderModel.globalRef.toString() ?? null,
+            'folderName': folderModel.folderName ?? null,
+            'folderCreatedAt': folderModel.createdAt ?? null,
+          });
+        }
 
-        await _db
-            .reference()
-            .child('shared')
-            .child('users')
-            .child(receiverId)
-            .child('received')
-            .child(userID)
-            .child(fileModel.fileId)
-            .reference()
-            .set({
-          'receiverEmailId': receiverEmailId,
-          'fileSenderId': fileModel.userId ?? null,
-          'fileParentId': fileModel.parentId ?? null,
-          'fileId': fileModel.fileId ?? null,
-          'fileName': fileModel.fileName ?? null,
-          'fileGlobalRef': fileModel.globalRef ?? null,
-          'fileDownloadLink': fileModel.fileDownloadLink ?? null,
-          'fileCreatedAt': fileModel.createdAt ?? null,
-          'documentType': fileModel.documentType ?? null,
-          'documentSenderId': fileModel.userId ?? null,
-        });
-      }
-    } else
-      debugPrint('receievr id not found');
+        if (docType == documentType.file) {
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(userID)
+              .child('send')
+              .child(receiverId)
+              .child(fileModel.fileId)
+              .reference()
+              .set({
+            'receiverEmailId': receiverEmailId,
+            'fileSenderId': fileModel.userId ?? null,
+            'fileParentId': fileModel.parentId ?? null,
+            'fileId': fileModel.fileId ?? null,
+            'fileName': fileModel.fileName ?? null,
+            'fileGlobalRef': fileModel.globalRef ?? null,
+            'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+            'fileCreatedAt': fileModel.createdAt ?? null,
+            'documentType': fileModel.documentType ?? null,
+            'documentSenderId': fileModel.userId ?? null,
+          });
+
+          await _db
+              .reference()
+              .child('shared')
+              .child('users')
+              .child(receiverId)
+              .child('received')
+              .child(userID)
+              .child(fileModel.fileId)
+              .reference()
+              .set({
+            'receiverEmailId': receiverEmailId,
+            'fileSenderId': fileModel.userId ?? null,
+            'fileParentId': fileModel.parentId ?? null,
+            'fileId': fileModel.fileId ?? null,
+            'fileName': fileModel.fileName ?? null,
+            'fileGlobalRef': fileModel.globalRef ?? null,
+            'fileDownloadLink': fileModel.fileDownloadLink ?? null,
+            'fileCreatedAt': fileModel.createdAt ?? null,
+            'documentType': fileModel.documentType ?? null,
+            'documentSenderId': fileModel.userId ?? null,
+          });
+        }
+      } else
+        debugPrint('receievr id not found');
+    }
   }
 }

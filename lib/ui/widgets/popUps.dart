@@ -1,6 +1,7 @@
 import 'package:Aol_docProvider/core/models/filemodel.dart';
 import 'package:Aol_docProvider/core/models/foldermodel.dart';
 import 'package:Aol_docProvider/core/models/usermodel.dart';
+import 'package:Aol_docProvider/core/services/coverters.dart';
 import 'package:Aol_docProvider/core/services/database.dart';
 import 'package:Aol_docProvider/core/services/validators.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
@@ -23,7 +24,8 @@ shareWithPopUp(
       UserModel _userModel = Provider.of<UserModel>(context);
       return AlertDialog(
         backgroundColor: Colors.white,
-        title: Text("Enter emailId of the person to Share with"),
+        title: Text(
+            "Enter emailId of the person to give access of the document and seperate by , to share with multiple users"),
         content: Form(
           key: _sharerKeyName,
           child: TextFormField(
@@ -67,12 +69,16 @@ shareWithPopUp(
           FlatButton(
               color: Colors.white,
               onPressed: () async {
+                List<String> emailList;
+                emailList = getEmailList(_sharerControllerName.text);
                 if (_sharerKeyName.currentState.validate()) {
                   await DatabaseService(
                     userID: documentSenderId ?? _userModel.uid,
                   ).shareWith(
                     docType: documentType,
-                    receiverEmailId: _sharerControllerName.text,
+                    receiverEmailId: emailList,
+                    // receiverEmailId: _sharerControllerName.text,
+
                     folderModel: folderModel ?? null,
                     fileModel: fileModel ?? null,
                   );

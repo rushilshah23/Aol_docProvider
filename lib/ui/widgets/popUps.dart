@@ -25,7 +25,7 @@ shareWithPopUp(
       return AlertDialog(
         backgroundColor: Colors.white,
         title: Text(
-            "Enter emailId of the person to give access of the document and seperate by , to share with multiple users"),
+            "Enter emailId of the person to give access of the document and seperate by comma, to share with multiple users"),
         content: Form(
           key: _sharerKeyName,
           child: TextFormField(

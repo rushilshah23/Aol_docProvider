@@ -101,7 +101,7 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
         .child(widget.receivedUserModel.receivedUserUid)
         .reference()
         .once()
-        .then((snapshot) async {
+        .then((DataSnapshot snapshot) async {
       fileModelList.clear();
       if (snapshot.value != null) {
         try {
@@ -110,22 +110,23 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
 
           fileModelList.clear();
           for (var key in keys) {
-            if (data[key]['documentSenderId'] == key) {
-              if (data[key]['documentType'] == 'documentType.file') {
-                setState(() {
-                  FileModel fileModel = new FileModel(
-                      userId: data[key]['fileSenderId'],
-                      parentId: data[key]['fileParentId'],
-                      fileId: data[key]['fileId'],
-                      documentType: data[key]['fileDocumentType'],
-                      globalRef: data[key]['fileGlobalRef'],
-                      fileName: data[key]['fileName'],
-                      createdAt: data[key]['fileCreatedAt']);
-                  fileModelList.add(FileCard(fileModel: fileModel));
-                });
-              }
+            // if (data[key]['documentSenderId'] == key) {
+            if (data[key]['documentType'] == 'documentType.file') {
+              setState(() {
+                FileModel fileModel = new FileModel(
+                    userId: data[key]['fileSenderId'],
+                    parentId: data[key]['fileParentId'],
+                    fileId: data[key]['fileId'],
+                    documentType: data[key]['fileDocumentType'],
+                    globalRef: data[key]['fileGlobalRef'],
+                    fileName: data[key]['fileName'],
+                    createdAt: data[key]['fileCreatedAt'],
+                    fileDownloadLink: data[key]['fileDownloadLink']);
+                fileModelList.add(FileCard(fileModel: fileModel));
+              });
             }
           }
+          // }
         } catch (e) {
           e.toString();
         }

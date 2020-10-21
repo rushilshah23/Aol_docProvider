@@ -11,6 +11,7 @@ class Wrapper extends StatelessWidget {
     final user = Provider.of<UserModel>(context);
 
     if (user == null) {
+      // call back login screen of proj_timapp
       return Authenticate();
     } else {
       return DrivePage(
@@ -24,7 +25,7 @@ class Wrapper extends StatelessWidget {
             .child('documentManager')
             .reference()
             .path,
-        folderName: user.userEmail,
+        folderName: user.userEmail ?? user.userPhoneNo ?? null,
       );
     }
   }

@@ -19,6 +19,7 @@ class _SignInState extends State<SignIn> {
   TextEditingController _emailHomePageController = new TextEditingController();
   TextEditingController _passwordHomePageConroller =
       new TextEditingController();
+  TextEditingController _phoneHomePageController = new TextEditingController();
   String error = '';
 
   @override
@@ -55,6 +56,14 @@ class _SignInState extends State<SignIn> {
                           hintText: "Enter your Email ID",
                           labelText: "Email ID",
                           validateFunction: emailValidator),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      textFieldWidget(
+                          controller: _phoneHomePageController,
+                          hintText: "Enter your phone number",
+                          labelText: "Phoen number",
+                          validateFunction: null),
                       SizedBox(
                         height: 16,
                       ),
@@ -96,6 +105,41 @@ class _SignInState extends State<SignIn> {
                               debugPrint(error.toString());
                             }
                           }
+                        });
+                      }),
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Builder(builder: (BuildContext context) {
+                        return formButton(context,
+                            iconData: Icons.format_list_numbered,
+                            textData: "Sign In with phone number",
+                            onPressed: () async {
+                          // if (_signInKey.currentState.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          try {
+                            AuthenticationService()
+                                .siginInwithPhone(
+                                    context: context,
+                                    phoneNo: _phoneHomePageController.text)
+                                .then((value) {
+                              if (value == null) {
+                                setState(() {
+                                  isLoading = false;
+                                  error = 'please use valid email or password';
+                                });
+                                // Scaffold.of(context).showSnackBar(SnackBar(
+                                //     content: Text("invalid email or password")));
+                              } else {
+                                debugPrint(value.uid);
+                              }
+                            });
+                          } catch (error) {
+                            debugPrint(error.toString());
+                          }
+                          // }
                         });
                       }),
                       SizedBox(

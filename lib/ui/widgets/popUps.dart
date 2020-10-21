@@ -25,36 +25,37 @@ shareWithPopUp(
       return AlertDialog(
         backgroundColor: Colors.white,
         title: Text(
-            "Enter emailId of the person to give access of the document and seperate by comma, to share with multiple users"),
+            "Enter emailId or phone No. of the person to give access of the document and seperate by comma, to share with multiple users"),
         content: Form(
           key: _sharerKeyName,
           child: TextFormField(
-              cursorColor: Color(0xFF02DEED),
-              style: TextStyle(
-                color: Colors.black,
-              ),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey[300],
-                labelStyle: TextStyle(
-                    color:
-                        focusNode.hasFocus ? Colors.black : Color(0xFF02DEED),
-                    fontSize: 10.0),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey[500],
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF02DEED)),
+            cursorColor: Color(0xFF02DEED),
+            style: TextStyle(
+              color: Colors.black,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey[300],
+              labelStyle: TextStyle(
+                  color: focusNode.hasFocus ? Colors.black : Color(0xFF02DEED),
+                  fontSize: 10.0),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.grey[500],
                 ),
               ),
-              focusNode: focusNode,
-              autofocus: true,
-              controller: _sharerControllerName,
-              validator: emailValidator
-              // validator: passwordValidator,
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF02DEED)),
               ),
+            ),
+            focusNode: focusNode,
+            autofocus: true,
+            controller: _sharerControllerName,
+            validator: null,
+            // validator: emailValidator
+
+            // validator: passwordValidator,
+          ),
         ),
         actions: [
           FlatButton(

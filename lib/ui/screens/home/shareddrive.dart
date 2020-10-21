@@ -44,6 +44,7 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
     super.initState();
   }
 
+  // Future<List<FolderCard>> getFolderCardList({UserModel userModelVar}) async {
   Future<List<FolderCard>> getFolderCardList() async {
     await _databaseReference
         .reference()
@@ -91,6 +92,7 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
     return folderModelList;
   }
 
+  // Future<List<FileCard>> getFileCardList({UserModel userModelVar}) async {
   Future<List<FileCard>> getFileCardList() async {
     await _databaseReference
         .reference()
@@ -138,7 +140,7 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserModel>(context);
+    // var user = Provider.of<UserModel>(context);
     print(widget.receivedUserModel.receivedUserUid);
 
     return StreamBuilder<Event>(
@@ -147,7 +149,7 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
             .reference()
             .child('shared')
             .child('users')
-            .child(user.uid)
+            .child(userModelVar.uid)
             .child('received')
             .child(widget.receivedUserModel.userId)
             .child('documentManager')
@@ -156,6 +158,8 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
         builder: (context, snapshot) {
           getFileCardList();
           getFolderCardList();
+          // getFileCardList(userModelVar: userModelVar);
+          // getFolderCardList(userModelVar: userModelVar);
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(

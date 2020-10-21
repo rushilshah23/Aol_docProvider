@@ -17,8 +17,8 @@ class DrivePage extends StatefulWidget {
   final String pid;
   final String folderId;
   final dynamic ref;
+  final dynamic folderName;
 
-  final String folderName;
   DrivePage({
     @required this.uid,
     this.pid,
@@ -57,6 +57,7 @@ class _DrivePageState extends State<DrivePage> {
         .child(widget.folderId)
         .reference();
     print(" in drive ${driveRef.path}");
+    print("foldername is ${widget.folderName}");
     // .reference();
 
     // filesCard.clear();
@@ -350,6 +351,9 @@ class _DrivePageState extends State<DrivePage> {
   Widget build(BuildContext context) {
     var user = Provider.of<UserModel>(context);
 
+    // print(
+    //     "in build usermodel details ${user.uid}, ${user.userEmail}, ${user.userPhoneNo}");
+
     return StreamBuilder<Event>(
         stream: db
             .reference()
@@ -366,7 +370,7 @@ class _DrivePageState extends State<DrivePage> {
                   appBar: AppBar(
                       backgroundColor: appBarColor,
                       title: AutoSizeText(
-                        widget.folderName,
+                        widget.folderName ?? 'null',
                         overflow: TextOverflow.visible,
                       ),
                       centerTitle: true,

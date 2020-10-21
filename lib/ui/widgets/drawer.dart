@@ -1,13 +1,16 @@
 import 'package:Aol_docProvider/core/models/usermodel.dart';
 import 'package:Aol_docProvider/core/services/authenticationService.dart';
+import 'package:Aol_docProvider/core/services/database.dart';
+import 'package:Aol_docProvider/ui/screens/Authentication/authentication.dart';
 import 'package:Aol_docProvider/ui/screens/home/shared.dart';
 import 'package:Aol_docProvider/ui/shared/constants.dart';
 import 'package:Aol_docProvider/ui/widgets/loading.dart';
+import 'package:Aol_docProvider/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 Widget homeDrawer(BuildContext context) {
-  var user = Provider.of<UserModel>(context);
+  var user = Provider.of<UserModel>(context, listen: false);
   isLoading = false;
   final AuthenticationService _auth = AuthenticationService();
   return isLoading
@@ -25,7 +28,7 @@ Widget homeDrawer(BuildContext context) {
                       ),
                       Center(
                           child: Text(
-                        user.userEmail,
+                        user.userEmail ?? user.userPhoneNo ?? 'null',
                         style: TextStyle(),
                       )),
                     ],
@@ -43,9 +46,16 @@ Widget homeDrawer(BuildContext context) {
                 ),
                 onTap: () async {
                   isLoading = true;
-                  _auth.signoutEmailId();
+
+                  AuthenticationService().signoutEmailId();
+
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return Wrapper();
+                  }));
                   isLoading = false;
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                  // _auth.signoutEmailId();
                 },
               ),
               ListTile(

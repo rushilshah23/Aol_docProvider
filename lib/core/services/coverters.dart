@@ -3,7 +3,7 @@ List<String> getEmailList(String emailListString) {
   emailListString = emailListString.replaceAll(" ", "");
   emailList = emailListString.split(',');
   emailList.forEach((element) {
-    print(element);
+    print("traced element in share is " + element);
   });
   return emailList;
 }

@@ -29,14 +29,57 @@ class DatabaseService {
   List<FolderModel> foldersCard = [];
 
   Future updateUserData({String folderName}) async {
+    bool present = false;
     await globalRef
         .reference()
         .child('users')
-        .child(userID)
-        .child('documentManager')
-        .set({
-      'folderName': folderName,
-      'userId': userID,
+        .once()
+        .then((DataSnapshot snapshot) async {
+      if (snapshot.value != null) {
+        var keys = snapshot.value.keys;
+        var data = snapshot.value;
+        for (var key in keys) {
+          print("searcching key is " + key);
+          if (key == userID) {
+            present = true;
+            return null;
+          }
+          //   else {
+          //     await globalRef
+          //         .reference()
+          //         .child('users')
+          //         .child(userID)
+          //         .child('documentManager')
+          //         .set({
+          //       'folderName': folderName,
+          //       'userId': userID,
+          //     });
+          //   }
+        }
+        if (present == false) {
+          await globalRef
+              .reference()
+              .child('users')
+              .child(userID)
+              .child('documentManager')
+              .set({
+            'folderName': folderName,
+            'userId': userID,
+          });
+        }
+      } else {
+        if (present == false) {
+          await globalRef
+              .reference()
+              .child('users')
+              .child(userID)
+              .child('documentManager')
+              .set({
+            'folderName': folderName,
+            'userId': userID,
+          });
+        }
+      }
     });
   }
 
@@ -558,15 +601,15 @@ class DatabaseService {
 
       if (receiverId != null) {
         print('before push');
-        _db
-            .reference()
-            .child('shared')
-            .child('users')
-            .child(userID)
-            .child('send')
-            .child(receiverId)
-            .push()
-            .key;
+        // _db
+        //     .reference()
+        //     .child('shared')
+        //     .child('users')
+        //     .child(userID)
+        //     .child('send')
+        //     .child(receiverId)
+        //     .push()
+        //     .key;
         print('after push');
 
         if (docType == documentType.folder) {
@@ -580,7 +623,7 @@ class DatabaseService {
               .child(folderModel.folderId)
               .reference()
               .set({
-            'receiverEmailId': receiverEmailId,
+            'receiverEmailId': receiverEmailId[i],
             'documentSenderId': folderModel.userId ?? null,
             'documentReceiverId': receiverId ?? null,
             'folderId': folderModel.folderId ?? null,
@@ -602,7 +645,7 @@ class DatabaseService {
               .child(folderModel.folderId)
               .reference()
               .set({
-            'receiverEmailId': receiverEmailId,
+            'receiverEmailId': receiverEmailId[i],
             'documentSenderId': folderModel.userId ?? null,
             'documentReceiverId': receiverId ?? null,
             'folderId': folderModel.folderId ?? null,
@@ -625,7 +668,7 @@ class DatabaseService {
               .child(fileModel.fileId)
               .reference()
               .set({
-            'receiverEmailId': receiverEmailId,
+            'receiverEmailId': receiverEmailId[i],
             'fileSenderId': fileModel.userId ?? null,
             'fileParentId': fileModel.parentId ?? null,
             'fileId': fileModel.fileId ?? null,
@@ -647,7 +690,7 @@ class DatabaseService {
               .child(fileModel.fileId)
               .reference()
               .set({
-            'receiverEmailId': receiverEmailId,
+            'receiverEmailId': receiverEmailId[i],
             'fileSenderId': fileModel.userId ?? null,
             'fileParentId': fileModel.parentId ?? null,
             'fileId': fileModel.fileId ?? null,

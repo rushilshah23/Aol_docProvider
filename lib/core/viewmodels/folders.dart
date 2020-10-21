@@ -238,6 +238,7 @@ class _FolderCardState extends State<FolderCard> {
 
   @override
   Widget build(BuildContext context) {
+    // var user = Provider.of<UserModel>(context);
     return Container(
         height: 120,
         width: 120,

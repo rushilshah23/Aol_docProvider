@@ -83,6 +83,7 @@ class _SharedPageState extends State<SharedPage> {
     return StreamBuilder<Event>(
         stream: _shareRef.onValue,
         builder: (context, snapshot) {
+          // getReceivedUsersEmail();
           return snapshot.hasData && !snapshot.hasError
               ? Scaffold(
                   appBar: AppBar(

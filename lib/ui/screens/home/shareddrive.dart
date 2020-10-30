@@ -140,13 +140,12 @@ class _ShareDrivePageState extends State<ShareDrivePage> {
 
   @override
   Widget build(BuildContext context) {
-    var userModelVar = Provider.of<UserModel>(context);
+    // var user = Provider.of<UserModel>(context);
     print(widget.receivedUserModel.receivedUserUid);
 
     return StreamBuilder<Event>(
         // stream: driveRef.reference().onValue,
-        stream: _db
-            //  _databaseReference
+        stream: _databaseReference
             .reference()
             .child('shared')
             .child('users')

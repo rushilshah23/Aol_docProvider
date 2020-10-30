@@ -47,13 +47,12 @@ Widget homeDrawer(BuildContext context) {
                 onTap: () async {
                   isLoading = true;
 
-                  AuthenticationService().signoutEmailId().then((value) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                      return Wrapper();
-                    }));
-                  });
+                  AuthenticationService().signoutEmailId();
 
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return Wrapper();
+                  }));
                   isLoading = false;
                   // Navigator.pop(context);
                   // _auth.signoutEmailId();

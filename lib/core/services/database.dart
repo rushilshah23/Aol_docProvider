@@ -212,7 +212,14 @@ class DatabaseService {
     String folderId,
     DatabaseReference driveRef,
   }) async {
-    // deleteFolderFromdbStorage(driveRef: driveRef, folderId: folderId);
+    //
+    try {
+      await deleteFolderFromdbStorage(driveRef: driveRef, folderId: folderId);
+    } catch (e) {
+      print("in deleting from fb storage ===========");
+      print(e.toString());
+      print("========== ===============");
+    }
 
     try {
       print("before folder deleted ${driveRef.path}/$folderId");
@@ -222,14 +229,14 @@ class DatabaseService {
       debugPrint(e.toString());
     }
 
-    try {
-      await _dbStorage
-          .child(driveRef.reference().path)
-          .child(folderId)
-          .delete();
-    } catch (e) {
-      print(e.toString());
-    }
+    // try {
+    //   await _dbStorage
+    //       .child(driveRef.reference().path)
+    //       .child(folderId)
+    //       .delete();
+    // } catch (e) {
+    //   print(e.toString());
+    // }
 
     // _dbStorage.child(driveRef.reference().path).child(folderId).delete();
 
@@ -349,13 +356,34 @@ class DatabaseService {
 
   deleteFolderFromdbStorage(
       {DatabaseReference driveRef, String folderId}) async {
-    await driveRef.child(folderId).once().then((DataSnapshot snapshot) {
+    FirebaseStorage _fbstorage = FirebaseStorage.instance;
+    // var internalRef = _fbstorage.ref();
+    DatabaseReference internalRef = driveRef;
+    await internalRef
+        .child(folderId)
+        .child('inFolders')
+        .once()
+        .then((DataSnapshot snapshot) async {
       if (snapshot != null) {
         var data = snapshot.value;
         var keys = snapshot.value.keys;
         for (var key in keys) {
-          if (data['inFolders'] != null) {
-            print("inFOlders " + data['inFolders']);
+          if (data[key]['documentType'] == 'documentType.folder') {
+            await deleteFolderFromdbStorage(
+                driveRef:
+                    internalRef.child(folderId).child('inFolders').reference(),
+                folderId: key);
+          } else if (data[key]['documentType'] == 'documentType.file') {
+            print(
+                internalRef.child(folderId).child('inFolders').child(key).path);
+            await deleteFile(
+                    driveRef: internalRef.child(folderId).child('inFolders'),
+                    fileId: key,
+                    fileName: data[key]['fileName'])
+                .then((_) async {
+              await deleteFolderFromdbStorage(
+                  driveRef: internalRef, folderId: folderId);
+            });
           }
         }
       }
